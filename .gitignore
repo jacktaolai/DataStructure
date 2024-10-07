@@ -1,0 +1,24 @@
+# Ignore everything
+*.txt
+*.exe
+*.filters
+*.user
+*.json
+*.vsidx
+*.suo
+*.wsuo
+*.db
+*.ipch
+*.tlog
+*.ipdb
+*.log
+*.obj
+*.pdb
+*.7z
+*.recipe
+*.enc
+*.iobj
+*.ilk
+*.idb
+*.zip
+*.sqlite
