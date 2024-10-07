@@ -1,8 +1,8 @@
+//BigNumber.h
 #pragma once
 #include <iostream>
 #include <fstream>
 #include <iomanip>//用于格式化输出
-//a
 //定义双向链表节点
 struct Node {
     int data;//存储一位数字

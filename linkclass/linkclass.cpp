@@ -1,3 +1,4 @@
+//linkclass.cpp
 //author: 未名湖居士
 //e-mail: jacktaolai@foxmail.com
 //Style: Google Style Guide
