@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="RearrangingRailroadCars.cpp" />
     <ClCompile Include="Stack_Exercise.cpp" />
   </ItemGroup>
   <ItemGroup>
