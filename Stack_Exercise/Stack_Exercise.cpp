@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include "Stack.h"
-#include "RadialControllerInterop.h"
+#include "RearrangingRailroadCars.h"
 
 
 int main() {
@@ -34,6 +34,13 @@ int main() {
 
     // 再次检查栈是否为空
     std::cout << "Stack is empty: " << std::boolalpha << stack.isEmpty() << std::endl;
+
+    int cars1[] = { 3, 5, 8, 1, 7, 4, 2, 9, 6 }; // 输入序列
+
+    rearrangeCars(cars1, 9); // 调用重新排列函数
+
+    int cars2[] = { 3, 4, 6, 1, 11, 13, 5, 7, 19, 8, 12, 2, 9, 16, 10, 14, 17, 18, 20, 15 }; // 输入序列
+    rearrangeCars(cars2, 20); // 调用重新排列函数
 
     return 0;
 }
