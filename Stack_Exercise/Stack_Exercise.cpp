@@ -55,7 +55,21 @@ int main() {
     cout << "像元分组完成，结果已输出到 " << outputFile << endl;
     Calculator test("((()))");
     cout<<test.checkParentheses("()");
+    std::string expression;
 
+    // 输入表达式
+    std::cout << "请输入表达式: ";
+    std::getline(std::cin, expression);
+
+    // 拆解表达式为操作数和运算符
+    std::vector<Token> tokens = test.tokenizeExpression(expression);
+
+    // 输出结果
+    std::cout << "分解结果:\n";
+    for (const Token& token : tokens) {
+        std::cout << (token.isOperator ? "运算符: " : "操作数: ") << token.value << std::endl;
+    }
+    int a = -3 + 1;
     return 0;
 }
 
