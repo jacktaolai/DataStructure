@@ -22,3 +22,6 @@
 *.idb
 *.zip
 *.sqlite
+*.db-shm
+*.db-wal
+*.opendb
