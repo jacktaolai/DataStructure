@@ -131,6 +131,8 @@
     <ClCompile Include="Stack_Exercise.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Link.h" />
+    <ClInclude Include="Pixel_Group.h" />
     <ClInclude Include="RearrangingRailroadCars.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>

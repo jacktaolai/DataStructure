@@ -9,7 +9,7 @@
 #include <iostream>
 #include "Stack.h"
 #include "RearrangingRailroadCars.h"
-
+#include "Pixel_Group.h"
 
 int main() {
     // 创建一个整数类型的链式栈
@@ -42,6 +42,17 @@ int main() {
     int cars2[] = { 3, 4, 6, 1, 11, 13, 5, 7, 19, 8, 12, 2, 9, 16, 10, 14, 17, 18, 20, 15 }; // 输入序列
     rearrangeCars(cars2, 20); // 调用重新排列函数
 
+ 
+        string inputFile = "二值图像分组-测试数据.txt";   // 输入文件
+        string outputFile = "labeled_image.txt";  // 输出文件
+
+        PixelGrouper grouper;
+        grouper.loadImage(inputFile);  // 读取图像
+        grouper.groupPixels();         // 分组像元
+        grouper.writeLabels(outputFile);  // 输出结果
+
+        cout << "像元分组完成，结果已输出到 " << outputFile << endl;
+  
     return 0;
 }
 
