@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "Link.h"
-#include <vector>
+#include "MyVector.h"//使用自己定义的vector
 #include <string>
 
 using namespace std;
@@ -63,9 +62,10 @@ class PixelGrouper {
 private:
     int rows;//记录行数
     int cols;//记录列数
-    vector<vector<int>> image;
-    vector<vector<int>> labels;
-    int dx[4] = { -1, 1, 0, 0 };  // 上下左右方向
+    myVector<myVector<int>> image;
+    myVector<myVector<int>> labels;
+    float version = 0.1;
+    int dx[4] = { -1, 1, 0, 0 };//使用数组表示方向
     int dy[4] = { 0, 0, -1, 1 };
 
 public:
@@ -83,25 +83,26 @@ public:
             if (line.substr(0, 4) == "Cols") cols = stoi(line.substr(6));
         }
 
-        // 读取图像数据
+        //将文件存到二维数组里
 
-        image.resize(rows, vector<int>(cols));
-        labels.resize(rows, vector<int>(cols, 0));  // 初始化标记矩阵
+        image.resize(rows, myVector<int>(cols));
+        labels.resize(rows, myVector<int>(cols, 0)); //初始化标记矩阵
 
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 inFile >> image[i][j];
+                labels[i][j] = 0;
             }
         }
     }
 
-    // 检查是否在有效边界内
+    //检查是否在有效边界内
     bool isValid(int x, int y) {
         return (x >= 0 && x < rows && y >= 0 && y < cols);
     }
 
-    // 使用自定义队列的BFS进行分组
-    void bfs(int startX, int startY, int groupNum) {
+    //进行分组
+    void group(int startX, int startY, int groupNum) {
         Queue<pair<int, int>> q(rows * cols);
         q.enqueue({ startX, startY });
         labels[startX][startY] = groupNum;
@@ -121,13 +122,14 @@ public:
         }
     }
 
-    // 对图像进行像元分组
+    //对图像进行像元分组
     void groupPixels() {
         int groupNum = 1;
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
-                if (image[i][j] == 1 && labels[i][j] == 0) {
-                    bfs(i, j, groupNum);
+
+                if (image[i][j] == 1 && labels[i][j] == 0) {//如果出现1并且未被检查过
+                    group(i, j, groupNum);
                     groupNum++;
                 }
             }
@@ -137,6 +139,11 @@ public:
     // 将结果输出到文件
     void writeLabels(const string& outputFilename) {
         ofstream outfile(outputFilename);
+        outfile << "IMAGE_HEADER_BEGIN" << std::endl;
+        outfile << "Version: " << version << std::endl;
+        outfile << "Rows: " << rows << std::endl;
+        outfile << "Cols: " << cols << std::endl;
+        outfile << "IMAGE_HEADER_END" << std::endl;
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 outfile << labels[i][j] << " ";
