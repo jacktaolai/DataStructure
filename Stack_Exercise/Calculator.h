@@ -21,12 +21,13 @@ public:
 	bool checkParentheses(const std::string& expression);
 
 	//转换为后缀表达式
-	std::vector<Token>& convertToPostfix(const std::vector<Token>& expression);
+	std::vector<Token> convertToPostfix(const std::vector<Token>& expression);
 
 	//检查是否是运算符,重载了适合字符和string的函数
 	bool isOperator(char ch) {
 		return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%';
 	}
+	//检查是否是运算符,重载了适合字符和string的函数
 	bool isOperator(const std::string& token) {
 		return token == "+" || token == "-" || token == "*" || token == "/" ||token == "^" || token == "%";
 	}
@@ -35,13 +36,23 @@ public:
 	bool isFunctionStart(char ch) {
 		return isalpha(ch);  // 函数以字母开头
 	}
+
 	//获取优先级
 	int getPriority(std::string anOperator);
 
 	//将输入的表达式转为操作数和运算符
 	std::vector<Token> tokenizeExpression(const std::string& expression);
 
-
+	//测试函数
+	/******/
+	//简单的打印函数
+	void printTokens(const std::vector<Token>& tokens) {
+		for (const auto& token : tokens) {
+			std::cout << token.value << " ";
+		}
+		std::cout << std::endl;
+	}
+	/******/
 
 public:
 

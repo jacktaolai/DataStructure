@@ -1,7 +1,6 @@
 #include "Calculator.h"
 
-bool Calculator::checkParentheses(const std::string& expression)
-{
+bool Calculator::checkParentheses(const std::string& expression){
     Stack<char> parenStack;//用于存储左括号的栈
 
     for (char ch : expression) {
@@ -21,45 +20,43 @@ bool Calculator::checkParentheses(const std::string& expression)
     return parenStack.isEmpty();
 }
 
-std::vector<Token>& Calculator::convertToPostfix(const std::vector<Token>& expression)
-{
-    Stack<std::string> operatorStack;  // 用来存储运算符的栈
-    std::vector<Token> postfix;         // 存储后缀表达式的向量
+std::vector<Token> Calculator::convertToPostfix(const std::vector<Token>& expression){
+    Stack<Token> operatorStack;//用来存储运算符的栈
+    std::vector<Token> postfix;//存储后缀表达式的向量
 
     for (const auto& token : expression) {
         if (!token.isOperator) {
-            // 如果是操作数，直接输出到后缀表达式
+            //如果是操作数，直接输出到后缀表达式
             postfix.push_back(token);
         }
         else if (token.value == "(") {
-            // 左括号压入栈
-            operatorStack.push(token.value);
+            //左括号压入栈
+            operatorStack.push(token);
         }
         else if (token.value == ")") {
-            // 右括号时，弹出栈直到遇到左括号
-            while (!operatorStack.isEmpty() && operatorStack.getTop() != "(") {
-                postfix.push_back({ operatorStack.pop(), true });
+            //右括号时，弹出栈直到遇到左括号
+            while (!operatorStack.isEmpty() && operatorStack.getTop().value != "(") {
+                postfix.push_back(operatorStack.pop());
             }
-            operatorStack.pop();  // 弹出左括号
+            operatorStack.pop();//弹出左括号
         }
-        else if (isOperator(token.value)) {
+        else if (token.isOperator) {
             // 遇到运算符，处理优先级
             while (!operatorStack.isEmpty() &&
-                getPriority(operatorStack.getTop()) >= getPriority(token.value)) {
-                postfix.push_back({ operatorStack.pop(), true });
+                (getPriority(operatorStack.getTop().value) >= getPriority(token.value))) {
+                postfix.push_back(operatorStack.pop());//优先级低则弹栈（等于按照从左往右也是低于）
             }
-            operatorStack.push(token.value);
+            operatorStack.push(token);//直到优先级高于栈顶
         }
     }
 
-    // 将剩余的操作符弹出栈
+    //将剩余的操作符弹出栈
     while (!operatorStack.isEmpty()) {
-        postfix.push_back({ operatorStack.pop(), true });
+        postfix.push_back(operatorStack.pop());
     }
 
-    return postfix;  // 返回后缀表达式
+    return postfix;
 }
-
 
 
 int Calculator::getPriority(std::string anOperator)
@@ -101,6 +98,7 @@ int Calculator::getPriority(std::string anOperator)
 }
 
 std::vector<Token> Calculator::tokenizeExpression(const std::string& expression){
+    //别返回函数内的引用啊:(
     std::vector<Token> tokens;
     std::string token;
     bool expectOperator = false;//用于区分负号和减号（因为除操作数外运算符和操作数交替出现）
@@ -126,7 +124,7 @@ std::vector<Token> Calculator::tokenizeExpression(const std::string& expression)
             }
             else {
                 if (!token.empty()) {
-                    tokens.push_back({ token, false });  //处理在此之前的数字
+                    tokens.push_back({ token, false });//处理在此之前的数字
                     token.clear();
                 }
                 tokens.push_back({ std::string(1, ch), true });  //当前运算符，一定要将一个字符转为字符串！他们之间不能隐式转换！
