@@ -116,6 +116,13 @@ std::vector<Token> Calculator::tokenizeExpression(const std::string& expression)
             token += ch;  //拼接完整的数字
             expectOperator = true;  //下一步期望是运算符
         }
+
+        if (ch == 'e') {
+            token += ch;
+            i++;//因为e后面跟符号（+-），所以在这里多取一位
+            //waring: 这里会产生1e的错误表达式无法判断
+            token += expression[i];
+        }
         //处理+-*/%^运算符
         else if (isOperator(ch)) {
             //如果是负数开头

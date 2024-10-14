@@ -72,7 +72,7 @@ int main() {
     //int a = -3 + 1;
     Calculator test2("((()))");
     // 测试表达式
-    std::string expression = "3+pow(4-1*2,3)";
+    std::string expression = "2.1-2*(3+2*3.2)/(-4e+2)";
 
     // 将表达式转换为Token序列
     std::vector<Token> tokenizedExpression = test2.tokenizeExpression(expression);
