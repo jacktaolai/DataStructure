@@ -26,7 +26,7 @@ public:
 		capacity = newCap;
 		first = new T[newCap];
 		for (int i = 0; i < capacity;i++) {
-			*(first + i) = val;//不用深拷贝就是野指针了！这里是一个野指针了！
+			*(first + i) = val;//不用深拷贝就是野指针了！注意不要野指针了！
 		}
 	}
 
