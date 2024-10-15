@@ -60,6 +60,10 @@ public:
 	Calculator() :expression("0") {};
 	Calculator(const std::string& _expression) :expression(_expression) {};
 
+
+	//计算(不包含括号匹配的过程）
+	float caculate(const std::string& expression);
+
 	//测试暂时放到public
 	/******/
 	//括号匹配检查

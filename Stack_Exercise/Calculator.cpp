@@ -33,6 +33,13 @@ std::vector<Token> Calculator::convertToPostfix(const std::vector<Token>& expres
             //左括号压入栈
             operatorStack.push(token);
         }
+        else if (token.value == ",") {
+            //逗号时，弹出栈直到遇到左括号
+            while (!operatorStack.isEmpty() && operatorStack.getTop().value != "(") {
+                postfix.push_back(operatorStack.pop());
+            }
+            //operatorStack.pop();//不要弹出左括号！
+        }
         else if (token.value == ")") {
             //右括号时，弹出栈直到遇到左括号
             while (!operatorStack.isEmpty() && operatorStack.getTop().value != "(") {
@@ -112,39 +119,52 @@ std::vector<Token> Calculator::tokenizeExpression(const std::string& expression)
         //}
 
         //处理数字（包括小数点）
-        if (isdigit(ch) || (ch == '.' )) {//此处可能出现的非法运算符如.1和+.
-            token += ch;  //拼接完整的数字
-            expectOperator = true;  //下一步期望是运算符
+        if (isdigit(ch) || (ch == '.') || (ch == 'e')) {
+            while (i < expression.size() && (isdigit(ch) || (ch == '.') || (ch == 'e'))) {//此处可能出现的非法运算符如.1和+.
+                if (ch == 'e') {
+                    token += expression[i];
+                    i++;//因为e后面跟符号（+-），所以在这里多取一位
+                    //waring: 这里会产生1e的错误表达式无法判断
+                    token += expression[i];
+                }
+                else {
+                    token += ch;  //拼接完整的数字
+                }
+                i++;
+                ch = expression[i];
+                expectOperator = true;  //下一步期望是运算符
+            }
+            //将操作数压入栈
+            tokens.push_back({ token, false });
+            token.clear();
         }
 
-        if (ch == 'e') {
-            token += ch;
-            i++;//因为e后面跟符号（+-），所以在这里多取一位
-            //waring: 这里会产生1e的错误表达式无法判断
-            token += expression[i];
-        }
         //处理+-*/%^运算符
-        else if (isOperator(ch)) {
+        if (isOperator(ch)) {
             //如果是负数开头
             if (ch == '-' && !expectOperator) {
                 token += ch;  //将负号看作数字的一部分
             }
             else {
-                if (!token.empty()) {
-                    tokens.push_back({ token, false });//处理在此之前的数字
-                    token.clear();
-                }
+                //if (!token.empty()) {
+                //    tokens.push_back({ token, false });//处理在此之前的数字
+                //    token.clear();
+                //}
                 tokens.push_back({ std::string(1, ch), true });  //当前运算符，一定要将一个字符转为字符串！他们之间不能隐式转换！
+                token.clear();
                 expectOperator = false;  //改变期望
             }
         }
+        //处理逗号,逗号优先级与右括号一样，而且逗号后面的期望是操作数
+        else if (ch == ',') {
+            tokens.push_back({ std::string(1, ch), true });  
+            token.clear();
+            expectOperator = false;
+        }
         //处理括号
         else if (ch == '(' || ch == ')') {
-            if (!token.empty()) {
-                tokens.push_back({ token, false });  //把之前的数字放入tokens
-                token.clear();
-            }
             tokens.push_back({ std::string(1, ch), true });  //当前括号
+            token.clear();
             expectOperator = (ch == ')');  //右括号后面期望是运算符（括号不改变期望）
         }
         //处理函数运算符sin cos tan sqrt pow
@@ -162,10 +182,6 @@ std::vector<Token> Calculator::tokenizeExpression(const std::string& expression)
         }
     }
 
-    //处理最后的操作数（如果有）
-    if (!token.empty()) {
-        tokens.push_back({ token, false });
-    }
 
     return tokens;
 }
