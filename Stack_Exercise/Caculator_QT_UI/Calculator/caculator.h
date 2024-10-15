@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <string>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Caculator;
@@ -22,6 +23,7 @@ private:
     Ui::Caculator *ui;
     std::string expression;
     float result;
+
 private slots:
     void clickInput(); //槽函数用于点击输入
     void deleteAll();  //槽函数用于清空输入框

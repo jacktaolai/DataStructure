@@ -1,5 +1,4 @@
 #include "Calculator.h"
-#include <cmath>
 
 bool Calculator::checkParentheses(const std::string& expression){
     Stack<char> parenStack;//用于存储左括号的栈
@@ -277,6 +276,5 @@ std::string Calculator::expections()
 
         return "表达式不合法！";
     }
-    //没有异常则返回空字符串
-    return "";
+
 }

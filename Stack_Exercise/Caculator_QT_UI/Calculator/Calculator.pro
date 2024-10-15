@@ -15,6 +15,7 @@ SOURCES += \
 
 HEADERS += \
     ../../Calculator.h \
+    ../../Stack.h \
     caculator.h
 
 FORMS += \

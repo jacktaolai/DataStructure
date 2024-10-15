@@ -1,5 +1,6 @@
 #include "caculator.h"
 #include "ui_caculator.h"
+#include "Calculator.h"
 
 Caculator::Caculator(QWidget *parent)
     : QMainWindow(parent)
@@ -67,5 +68,18 @@ void Caculator::deleteAll(){
 
 //计算结果
 void Caculator::equal(){
-
+    Calculator caculate(expression);
+    if (caculate.expections()==""){
+        float result=caculate.caculate(expression);
+        QString resultString=QString::number(result);
+        ui->result->setText(resultString);
+        ui->display->setText("");
+        expression="";
+    }
+    else{
+        QString resultString=QString::fromStdString(caculate.expections());
+        ui->result->setText(resultString);
+        ui->display->setText("");
+        expression="";
+    }
 }
