@@ -24,7 +24,7 @@ std::vector<Token> Calculator::convertToPostfix(const std::vector<Token>& expres
     Stack<Token> operatorStack;//用来存储运算符的栈
     std::vector<Token> postfix;//存储后缀表达式的向量
 
-    for (const auto& token : expression) {
+    for (const Token& token : expression) {
         if (!token.isOperator) {
             //如果是操作数，直接输出到后缀表达式
             postfix.push_back(token);
@@ -184,4 +184,76 @@ std::vector<Token> Calculator::tokenizeExpression(const std::string& expression)
 
 
     return tokens;
+}
+
+float Calculator::caculate(const std::string& expression) {
+    //将表达式转为token
+    std::vector<Token> tokens = tokenizeExpression(expression);
+
+    //将token转为后缀表达式
+    std::vector<Token> postfix = convertToPostfix(tokens);
+
+    //用栈储存运算结果
+    Stack<float> resultStack;
+
+    for (const Token& token : postfix) {
+        if (!token.isOperator) {
+            //操作数则直接压入栈，（用stof将字符串转为浮点型）
+            //warning:这里可能会出现类型转换错误的报错！
+            float floatNumber = std::stof(token.value);
+            resultStack.push(floatNumber);
+        }
+        else if (isOperator(token.value)) {
+            //是操作符则取两个操作数（二元操作符）
+            float rightNum = resultStack.pop();//左操作数
+            float leftNum = resultStack.pop();//右操作数
+            
+            //运算
+            if (token.value == "+") {
+                resultStack.push(leftNum + rightNum);
+            }
+            else if (token.value == "-") {
+                resultStack.push(leftNum - rightNum);
+            }
+            else if (token.value == "*") {
+                resultStack.push(leftNum * rightNum);
+            }
+            else if (token.value == "/") {
+                if (rightNum == 0) {
+                    throw std::runtime_error("除数不能为0！");
+                }
+                resultStack.push(leftNum / rightNum);
+            }
+            else if (token.value == "%") {
+                //要先强制转成整数求！
+                resultStack.push(static_cast<int>(leftNum) % static_cast<int>(rightNum));
+            }
+            else if (token.value == "^") {
+                resultStack.push(std::pow(leftNum, rightNum));
+            }
+        }
+        else if (isFunctionStart(token.value[0])) {
+            //处理函数运算符
+            float operand = resultStack.pop();
+
+            if (token.value == "sqrt") {
+                resultStack.push(std::sqrt(operand));
+            }
+            else if (token.value == "pow") {
+                float exponent = resultStack.pop();
+                resultStack.push(std::pow(operand, exponent));
+            }
+            else if (token.value == "sin") {
+                resultStack.push(std::sin(operand));
+            }
+            else if (token.value == "cos") {
+                resultStack.push(std::cos(operand));
+            }
+            else if (token.value == "tan") {
+                resultStack.push(std::tan(operand));
+            }
+        }
+    }
+
+    return resultStack.pop();
 }
