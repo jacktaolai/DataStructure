@@ -15,7 +15,7 @@ struct Token {
 
 class Calculator {
 public:
-	std::string expression;//表达式
+	std::string _expression;//表达式
 
 	//检查括号匹配
 	bool checkParentheses(const std::string& expression);
@@ -57,12 +57,14 @@ public:
 public:
 
 	//构造函数
-	Calculator() :expression("0") {};
-	Calculator(const std::string& _expression) :expression(_expression) {};
+	Calculator() :_expression("0") {};
+	Calculator(const std::string& _expression) :_expression(_expression) {};
 
 
 	//计算(不包含括号匹配的过程）
 	float caculate(const std::string& expression);
+	//异常处理函数
+	std::string expections ();
 
 	//测试暂时放到public
 	/******/

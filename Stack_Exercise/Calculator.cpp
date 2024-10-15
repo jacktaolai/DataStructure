@@ -200,7 +200,13 @@ float Calculator::caculate(const std::string& expression) {
         if (!token.isOperator) {
             //操作数则直接压入栈，（用stof将字符串转为浮点型）
             //warning:这里可能会出现类型转换错误的报错！
-            float floatNumber = std::stof(token.value);
+            char* end;
+            const char* value = token.value.c_str();
+            float floatNumber = std::strtof(value,&end);
+            //通过end不为空来判断string没有正确被转为float
+            if (*end != '\0') {
+                throw std::runtime_error("输入错误的小数！");
+            }
             resultStack.push(floatNumber);
         }
         else if (isOperator(token.value)) {
@@ -256,4 +262,19 @@ float Calculator::caculate(const std::string& expression) {
     }
 
     return resultStack.pop();
+}
+
+std::string Calculator::expections()
+{
+    try {
+        caculate(_expression);
+    }
+    catch(const std::runtime_error& e){
+        return e.what();
+    }
+    catch(...){
+
+        return "表达式不合法！";
+    }
+
 }

@@ -72,7 +72,7 @@ int main() {
     //int a = -3 + 1;
     Calculator test2("((()))");
     // 测试表达式
-    std::string expression = "3/0";
+    std::string expression = "1.1.1";
 
     // 将表达式转换为Token序列
     std::vector<Token> tokenizedExpression = test2.tokenizeExpression(expression);
