@@ -63,7 +63,6 @@ public:
 
 	//计算(不包含括号匹配的过程）
 	float caculate(const std::string& expression);
-    float caculate(){return caculate(_expression);}
 	//异常处理函数
 	std::string expections ();
 
