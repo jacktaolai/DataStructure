@@ -198,80 +198,85 @@ float Calculator::caculate(const std::string& expression) {
     Stack<float> resultStack;
     //如果为空则进行提示
     if (postfix.empty()){ throw std::runtime_error("表达式为空"); }
-    try {
-        for (const Token& token : postfix) {
-            if (!token.isOperator) {
-                //操作数则直接压入栈，（用stof将字符串转为浮点型）
-                //warning:这里可能会出现类型转换错误的报错！
-                char* end;
-                const char* value = token.value.c_str();
-                float floatNumber = std::strtof(value, &end);
-                //通过end不为空来判断string没有正确被转为float
-                if (*end != '\0') {
-                    throw std::runtime_error("输入错误的小数！");
-                }
-                resultStack.push(floatNumber);
+  
+    for (const Token& token : postfix) {
+        if (!token.isOperator) {
+            //操作数则直接压入栈，（用stof将字符串转为浮点型）
+            //warning:这里可能会出现类型转换错误的报错！
+            char* end;
+            const char* value = token.value.c_str();
+            float floatNumber = std::strtof(value, &end);
+            //通过end不为空来判断string没有正确被转为float
+            if (*end != '\0') {
+                throw std::runtime_error("输入错误的小数！");
             }
-            else if (isOperator(token.value)) {
-                //是操作符则取两个操作数（二元操作符）
-                float rightNum = resultStack.pop();//左操作数
-                float leftNum = resultStack.pop();//右操作数
+            resultStack.push(floatNumber);
+        }
+        else if (isOperator(token.value)) {
+            //是操作符则取两个操作数（二元操作符）
+            if (resultStack.getSize() < 2) { throw std::runtime_error("有多余的操作符！"); }
+            float rightNum = resultStack.pop();//左操作数
+            float leftNum = resultStack.pop();//右操作数
 
-                //运算
-                if (token.value == "+") {
-                    resultStack.push(leftNum + rightNum);
+            //运算
+            if (token.value == "+") {
+                resultStack.push(leftNum + rightNum);
+            }
+            else if (token.value == "-") {
+                resultStack.push(leftNum - rightNum);
+            }
+            else if (token.value == "*") {
+                resultStack.push(leftNum * rightNum);
+            }
+            else if (token.value == "/") {
+                if (rightNum == 0) {
+                    throw std::runtime_error("除数不能为0！");
                 }
-                else if (token.value == "-") {
-                    resultStack.push(leftNum - rightNum);
-                }
-                else if (token.value == "*") {
-                    resultStack.push(leftNum * rightNum);
-                }
-                else if (token.value == "/") {
-                    if (rightNum == 0) {
-                        throw std::runtime_error("除数不能为0！");
-                    }
-                    resultStack.push(leftNum / rightNum);
-                }
-                else if (token.value == "%") {
-                    //要先强制转成整数求！
-                    resultStack.push(static_cast<int>(leftNum) % static_cast<int>(rightNum));
-                }
-                else if (token.value == "^") {
-                    resultStack.push(std::pow(leftNum, rightNum));
+                resultStack.push(leftNum / rightNum);
+            }
+            else if (token.value == "%") {
+                //要先强制转成整数求！
+                resultStack.push(static_cast<int>(leftNum) % static_cast<int>(rightNum));
+                if (rightNum == 0) {
+                    throw std::runtime_error("除数不能为0！");
                 }
             }
-            else if (isFunctionStart(token.value[0])) {
-                //处理函数运算符
-                float operand = resultStack.pop();
-
-                if (token.value == "sqrt") {
-                    resultStack.push(std::sqrt(operand));
-                }
-                else if (token.value == "pow") {
-                    float exponent = resultStack.pop();
-                    resultStack.push(std::pow(operand, exponent));
-                }
-                else if (token.value == "sin") {
-                    resultStack.push(std::sin(operand));
-                }
-                else if (token.value == "cos") {
-                    resultStack.push(std::cos(operand));
-                }
-                else if (token.value == "tan") {
-                    resultStack.push(std::tan(operand));
-                }
+            else if (token.value == "^") {
+                resultStack.push(std::pow(leftNum, rightNum));
             }
         }
+        else if (isFunctionStart(token.value[0])) {
+            //处理函数运算符
+            if (resultStack.getSize() < 1) { throw std::runtime_error("有多余的操作符！"); }
+            float rightNum = resultStack.pop();
 
-        return resultStack.pop();
-    }catch (...){throw std::runtime_error("除数不能为0！");
+            if (token.value == "sqrt") {
+                resultStack.push(std::sqrt(rightNum));
+            }
+            else if (token.value == "pow") {
+                if (resultStack.getSize() < 1) { throw std::runtime_error("有多余的操作符！"); }
+                float leftNum = resultStack.pop();
+                resultStack.push(std::pow(leftNum, rightNum));
+            }
+            else if (token.value == "sin") {
+                resultStack.push(std::sin(rightNum));
+            }
+            else if (token.value == "cos") {
+                resultStack.push(std::cos(rightNum));
+            }
+            else if (token.value == "tan") {
+                resultStack.push(std::tan(rightNum));
+            }
+        }
     }
+    if (resultStack.getSize()!=1){throw std::runtime_error("有多余的操作数！");}
+    else {return resultStack.pop();}
 }
 
-std::string Calculator::expections()
-{
+std::string Calculator::expections(){
     try {
+        if (!checkParentheses(_expression)) { throw std::runtime_error("括号不匹配！"); }//检查括号匹配
+
         caculate(_expression);
     }
     catch(const std::runtime_error& e){

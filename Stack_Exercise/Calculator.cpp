@@ -214,6 +214,7 @@ float Calculator::caculate(const std::string& expression) {
         }
         else if (isOperator(token.value)) {
             //是操作符则取两个操作数（二元操作符）
+            if (resultStack.getSize() < 2) { throw std::runtime_error("有多余的操作符！"); }
             float rightNum = resultStack.pop();//左操作数
             float leftNum = resultStack.pop();//右操作数
 
@@ -246,12 +247,14 @@ float Calculator::caculate(const std::string& expression) {
         }
         else if (isFunctionStart(token.value[0])) {
             //处理函数运算符
+            if (resultStack.getSize() < 1) { throw std::runtime_error("有多余的操作符！"); }
             float rightNum = resultStack.pop();
 
             if (token.value == "sqrt") {
                 resultStack.push(std::sqrt(rightNum));
             }
             else if (token.value == "pow") {
+                if (resultStack.getSize() < 1) { throw std::runtime_error("有多余的操作符！"); }
                 float leftNum = resultStack.pop();
                 resultStack.push(std::pow(leftNum, rightNum));
             }
@@ -266,8 +269,8 @@ float Calculator::caculate(const std::string& expression) {
             }
         }
     }
-
-    return resultStack.pop();
+    if (resultStack.getSize()!=1){throw std::runtime_error("有多余的操作数！");}
+    else {return resultStack.pop();}
 }
 
 std::string Calculator::expections(){
