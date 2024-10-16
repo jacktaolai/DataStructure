@@ -77,8 +77,9 @@ void Caculator::equal(){
         expression="";
     }
     else{
-        QString resultString=QString::fromStdString(caculate.expections());
-        ui->result->setText(resultString);
+        std:: string resultString=caculate.expections();
+        QString resultQString=QString::fromLocal8Bit(resultString.c_str());
+        ui->result->setText(resultQString);
         ui->display->setText("");
         expression="";
     }

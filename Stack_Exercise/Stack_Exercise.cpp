@@ -70,9 +70,9 @@ int main() {
     //    std::cout << (token.isOperator ? "运算符: " : "操作数: ") << token.value << std::endl;
     //}
     //int a = -3 + 1;
-    Calculator test2("((()))");
+    Calculator test2("1%0");
     // 测试表达式
-    std::string expression = "";
+    std::string expression = "1%0";
 
     // 将表达式转换为Token序列
     std::vector<Token> tokenizedExpression = test2.tokenizeExpression(expression);
@@ -88,7 +88,7 @@ int main() {
     std::cout << "Postfix Expression: ";
     test2.printTokens(postfixExpression);
     string e = test2.expections();
-    float a =test2.caculate(expression);
+    float a =test2.caculate();
     cout << a;
     return 0;
 }
