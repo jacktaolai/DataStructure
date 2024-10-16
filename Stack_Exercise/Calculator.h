@@ -5,7 +5,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <cctype>   // for isdigit, isalpha
+#include <cctype>   //检查字符是否是字母或数字
+#include <cmath>
+
 
 // 用于存储分离出来的操作数和运算符
 struct Token {
@@ -14,9 +16,17 @@ struct Token {
 };
 
 class Calculator {
-public:
+private:
 	std::string _expression;//表达式
 
+	//阶乘计算函数
+	float factorial(float n) {
+		if (n < 0 || fmod(n, 1) != 0) { throw std::runtime_error("使用了不正确的数进行阶乘！"); }
+		if (n <= 1) {
+			return 1;
+		}
+		return n * factorial(n - 1);
+	}
 	//检查括号匹配
 	bool checkParentheses(const std::string& expression);
 
@@ -25,7 +35,7 @@ public:
 
 	//检查是否是运算符,重载了适合字符和string的函数
 	bool isOperator(char ch) {
-		return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%';
+		return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == '!';
 	}
 	//检查是否是运算符,重载了适合字符和string的函数
 	bool isOperator(const std::string& token) {

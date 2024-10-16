@@ -1,5 +1,4 @@
 #include "Calculator.h"
-#include <cmath>
 
 bool Calculator::checkParentheses(const std::string& expression){
     Stack<char> parenStack;//用于存储左括号的栈
@@ -72,6 +71,7 @@ int Calculator::getPriority(std::string anOperator)
         +---------------- + ------------------ +
         | 操作符 / 函数    | 优先级              |
         +---------------- + ------------------ +
+        | !               | 4                  |
         | sqrt            | 3                  |
         | pow             | 3                  |
         | sin             | 3                  |
@@ -87,6 +87,9 @@ int Calculator::getPriority(std::string anOperator)
     ***************所有的操作符**********************/
 
     //获取操作符的优先级
+    if (anOperator == "!") {
+        return 4;//幂运算的优先级为 2
+    }
     if (anOperator == "sqrt" || anOperator == "pow" || anOperator == "sin" || 
         anOperator == "cos" || anOperator == "tan") {
         return 3;//函数优先级为 3
@@ -197,8 +200,8 @@ float Calculator::caculate(const std::string& expression) {
     //用栈储存运算结果
     Stack<float> resultStack;
     //如果为空则进行提示
-    if (postfix.empty()){ throw std::runtime_error("表达式为空"); }
-  
+    if (postfix.empty()) { throw std::runtime_error("表达式为空"); }
+
     for (const Token& token : postfix) {
         if (!token.isOperator) {
             //操作数则直接压入栈，（用stof将字符串转为浮点型）
@@ -212,7 +215,7 @@ float Calculator::caculate(const std::string& expression) {
             }
             resultStack.push(floatNumber);
         }
-        else if (isOperator(token.value)) {
+        else if (isOperator(token.value) && token.value != "!") {//排除单目运算符
             //是操作符则取两个操作数（二元操作符）
             if (resultStack.getSize() < 2) { throw std::runtime_error("有多余的操作符！"); }
             float rightNum = resultStack.pop();//左操作数
@@ -245,7 +248,7 @@ float Calculator::caculate(const std::string& expression) {
                 resultStack.push(std::pow(leftNum, rightNum));
             }
         }
-        else if (isFunctionStart(token.value[0])) {
+        else if (isFunctionStart(token.value[0]) || token.value == "!") {
             //处理函数运算符
             if (resultStack.getSize() < 1) { throw std::runtime_error("有多余的操作符！"); }
             float rightNum = resultStack.pop();
@@ -267,12 +270,17 @@ float Calculator::caculate(const std::string& expression) {
             else if (token.value == "tan") {
                 resultStack.push(std::tan(rightNum));
             }
+            else if (token.value == "!") {
+                float result;
+                try { result = factorial(rightNum); }
+                catch (...) { throw std::runtime_error{ "存在不能阶乘的数！" }; }
+                resultStack.push(result);
+            }
         }
     }
-    if (resultStack.getSize()!=1){throw std::runtime_error("有多余的操作数！");}
-    else {return resultStack.pop();}
+    if (resultStack.getSize() != 1) { throw std::runtime_error("有多余的操作数！"); }
+    else { return resultStack.pop(); }
 }
-
 std::string Calculator::expections(){
     try {
         if (!checkParentheses(_expression)) { throw std::runtime_error("括号不匹配！"); }//检查括号匹配

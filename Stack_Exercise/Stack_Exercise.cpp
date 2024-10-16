@@ -70,23 +70,23 @@ int main() {
     //    std::cout << (token.isOperator ? "运算符: " : "操作数: ") << token.value << std::endl;
     //}
     //int a = -3 + 1;
-    Calculator test2("1%0");
+    Calculator test2("4!");
     // 测试表达式
     std::string expression = "1%0";
 
     // 将表达式转换为Token序列
-    std::vector<Token> tokenizedExpression = test2.tokenizeExpression(expression);
+    //std::vector<Token> tokenizedExpression = test2.tokenizeExpression(expression);
 
     // 输出分词结果
     std::cout << "Tokenized Expression: ";
-    test2.printTokens(tokenizedExpression);
+    //test2.printTokens(tokenizedExpression);
 
     // 将中缀表达式转换为后缀表达式
-    std::vector<Token> postfixExpression = test2.convertToPostfix(tokenizedExpression);
+    //std::vector<Token> postfixExpression = test2.convertToPostfix(tokenizedExpression);
 
     // 输出后缀表达式
     std::cout << "Postfix Expression: ";
-    test2.printTokens(postfixExpression);
+    //test2.printTokens(postfixExpression);
     string e = test2.expections();
     float a =test2.caculate();
     cout << a;

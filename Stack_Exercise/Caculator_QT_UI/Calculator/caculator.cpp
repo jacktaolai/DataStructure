@@ -32,6 +32,10 @@ Caculator::Caculator(QWidget *parent)
     connect(ui->Button_sqrt, &QPushButton::clicked, this, &Caculator::clickInput);
     connect(ui->Button_tan, &QPushButton::clicked, this, &Caculator::clickInput);
     connect(ui->Button_times, &QPushButton::clicked, this, &Caculator::clickInput);
+    connect(ui->Button_e, &QPushButton::clicked, this, &Caculator::clickInput);
+    connect(ui->Button_factorial, &QPushButton::clicked, this, &Caculator::clickInput);
+
+
 
     //链接删除按钮
     connect(ui->Button_delete, &QPushButton::clicked, this, &Caculator::deleteAll);
