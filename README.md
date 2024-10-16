@@ -46,7 +46,8 @@ git clone https://github.com/jacktaolai/DataStructure.git
 
 ## 📊 Star 趋势图
 
-[![Stargazers over time](https://starchart.cc/jacktaolai/DataStructure.svg)](https://starchart.cc/jacktaolai/DataStructure)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jacktaolai/DataStructure&type=Date)](https://star-history.com/?utm_source=bestxtools.com#jacktaolai/DataStructure&Date)
 
 ## 🤝 贡献指南
 
