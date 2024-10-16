@@ -239,10 +239,10 @@ float Calculator::caculate(const std::string& expression) {
             }
             else if (token.value == "%") {
                 //要先强制转成整数求！
-                resultStack.push(static_cast<int>(leftNum) % static_cast<int>(rightNum));
                 if (rightNum == 0) {
                     throw std::runtime_error("除数不能为0！");
                 }
+                resultStack.push(static_cast<int>(leftNum) % static_cast<int>(rightNum));
             }
             else if (token.value == "^") {
                 resultStack.push(std::pow(leftNum, rightNum));
