@@ -7,8 +7,15 @@
 
 #include <iostream>
 #include "BinaryTree.h"
+#include "LinkQueue.h"
 int main()
 {
+    LinkQueue<int> test2;
+    test2.enqueue(2);
+    test2.enqueue(3);
+    test2.dequeue();
+
+
     BinaryTree<char> test;
     test.createFromPreorder("ABC####");
     std::cout << "Hello World!\n";

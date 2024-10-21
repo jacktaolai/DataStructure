@@ -21,9 +21,11 @@ class BinaryTree {
 public:
 	BinaryTree():root(nullptr){}
 
-	//从前序序列创建
+	//从前序序列创建树
 	void createFromPreorder(const std::string preorder);
-	TreeNode<char>* createFromPreorder(int& n, int stringLength, const std::string preorder);//n表示第n个字符
+	//从前序序列递归创建节点
+	TreeNode<char>* createFromPreorder(int& n, const std::string preorder);//n表示第n个字符
+	//TODO!
 	~BinaryTree() {};
 };
 
@@ -33,19 +35,17 @@ void BinaryTree<T>::createFromPreorder(const std::string preorder){
 	//特殊情况2，整个序列结束，返回
 	//一般情况：新建节点，然后新建左子树，然后新建右子树
 	int n = 0;
-	int stringLength = preorder.length();
-	root = createFromPreorder(n, stringLength, preorder);
+	root = createFromPreorder(n, preorder);
 
 }
 
-
 template<class T>
-TreeNode<char>* BinaryTree<T>::createFromPreorder( int& n,int stringLength, const std::string preorder){
+TreeNode<char>* BinaryTree<T>::createFromPreorder( int& n, const std::string preorder){
 	//一定要传入引用，这样n才会被修改
 	if (preorder[n] != '#') {
 		TreeNode<char>* newNode = new TreeNode<T>(preorder[n]);
-		newNode->leftChild = createFromPreorder(++n, stringLength, preorder);
-		newNode->rightChild = createFromPreorder(++n, stringLength, preorder);
+		newNode->leftChild = createFromPreorder(++n, preorder);
+		newNode->rightChild = createFromPreorder(++n, preorder);
 		return newNode;
 	}
 	else return nullptr;
