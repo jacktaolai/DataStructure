@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include "LinkQueue.h"
 template<class T>
 struct TreeNode
 {
@@ -17,14 +17,16 @@ struct TreeNode
 template<class T>
 class BinaryTree {
 	TreeNode<T>* root;//二叉树根指针
-
+	//从前序序列递归创建节点
+	TreeNode<char>* createFromPreorder(int& n, const std::string preorder);//n表示第n个字符
 public:
 	BinaryTree():root(nullptr){}
 
 	//从前序序列创建树
 	void createFromPreorder(const std::string preorder);
-	//从前序序列递归创建节点
-	TreeNode<char>* createFromPreorder(int& n, const std::string preorder);//n表示第n个字符
+
+	//从层序遍历创建
+	void createFromLevelorder(const std::string levelorder);
 	//TODO!
 	~BinaryTree() {};
 };
@@ -36,6 +38,33 @@ void BinaryTree<T>::createFromPreorder(const std::string preorder){
 	//一般情况：新建节点，然后新建左子树，然后新建右子树
 	int n = 0;
 	root = createFromPreorder(n, preorder);
+
+}
+
+template<class T>
+inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
+	char nodeData;
+	LinkQueue<TreeNode<char>*> levleOrder;//存储剩余节点的栈
+	LinkQueue<TreeNode<char>*> currentNode;//存储创建但是无孩子的节点栈
+	for (char nodeData : levelorder) {
+		if (nodeData != '#')
+			levleOrder.enqueue(new TreeNode<char>(nodeData));
+		else
+			levleOrder.enqueue(nullptr);
+	}
+	root = levleOrder.dequeue();
+	currentNode.enqueue(root);//先将根节点加入
+	while(currentNode.getSize()!=0){
+		TreeNode<char>* parentNode = currentNode.dequeue();//需要添加孩子的父节点
+		if (parentNode != nullptr) {
+			TreeNode<char>* leftChild = levleOrder.dequeue();
+			TreeNode<char>* rightChild = levleOrder.dequeue();
+			parentNode->leftChild = leftChild;
+			parentNode->rightChild = rightChild;
+			currentNode.enqueue(leftChild);
+			currentNode.enqueue(rightChild);
+		}
+	}
 
 }
 

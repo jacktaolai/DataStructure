@@ -13,19 +13,21 @@ class LinkQueue{
 private:
 	QueueNode<T>* front;
 	QueueNode<T>* rear;
-	size_t _size;
+	size_t _size=0;
 public:
 	LinkQueue():front(nullptr),rear(nullptr),_size(0){}
 	//入队
 	void enqueue(T _data);
 	//出队
 	T dequeue();
+	//获取队列长度
+	size_t getSize() { return _size; }
 	~LinkQueue();
 };
 
 template<class T>
 inline void LinkQueue<T>::enqueue(T _data){
-	if (rear == nullptr) {
+	if (_size==0) {
 		front = new QueueNode<T>(_data);
 		rear = front;
 		_size = 1;

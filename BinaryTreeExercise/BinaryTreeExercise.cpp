@@ -18,6 +18,7 @@ int main()
 
     BinaryTree<char> test;
     test.createFromPreorder("ABC####");
+    test.createFromLevelorder("AB#CD##EF#G####");
     std::cout << "Hello World!\n";
 }
 

@@ -26,3 +26,8 @@
 *.db-wal
 *.opendb
 *.idx
+*.dll
+11C236*
+*.ppt
+*.pptx
+
