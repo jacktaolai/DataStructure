@@ -2,6 +2,8 @@
 #include <string>
 #include "LinkQueue.h"
 #include "Stack.h"
+#include <unordered_map>
+
 template<class T>
 struct TreeNode
 {
@@ -31,6 +33,9 @@ private:
 	void preVisit(TreeNode<T>* root, void(*visit)(TreeNode<T>* node));
 	//使用后序遍历删除整棵树
 	void destory(TreeNode<T>* root = _root);
+	//从前序和中序创建
+	TreeNode<char>* contructTree(const std::string& preorder, const std::string& inorder,
+		int preStart,int preEnd,int inStar,int inEnd);
 
 public:
 	BinaryTree():_root(nullptr){}
@@ -40,16 +45,19 @@ public:
 
 	//从层序遍历创建
 	void createFromLevelorder(const std::string levelorder);
+	//从前序和中序创建
+	void contructTree(const std::string &preorder, const std::string &inorder);
 	//实现前序访问,使用函数指针完成swap操作
 	void preVisit() { preVisit(_root, swap); }
 	//使用栈寻找特定值的祖先
 	Stack<TreeNode<T>*> find(T key);
-	//TODO!
 	~BinaryTree() { destory(_root); }
 };
 
 template<class T>
 void BinaryTree<T>::createFromPreorder(const std::string preorder){
+	//防止内存泄漏
+	destory(_root);
 	//特殊情况1，遇到#表示子树为空，返回
 	//特殊情况2，整个序列结束，返回
 	//一般情况：新建节点，然后新建左子树，然后新建右子树
@@ -60,6 +68,8 @@ void BinaryTree<T>::createFromPreorder(const std::string preorder){
 
 template<class T>
 inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
+	//防止内存泄漏
+	destory(_root);
 	char nodeData;
 	LinkQueue<TreeNode<char>*> levleOrder;//存储剩余节点的栈
 	LinkQueue<TreeNode<char>*> currentNode;//存储创建但是无孩子的节点栈
@@ -83,6 +93,15 @@ inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
 		}
 	}
 
+}
+
+template<class T>
+inline void BinaryTree<T>::contructTree(const std::string &preorder, const std::string &inorder){
+	//防止内存泄漏
+	destory(_root);
+	//std::unordered_map<char, int> inorderMap;
+	if (preorder.size() == 0 || inorder.size() == 0) return;
+	_root = contructTree(preorder, inorder, 0, preorder.size() - 1, 0, inorder.size() - 1);
 }
 
 template<class T>
@@ -131,6 +150,25 @@ inline void BinaryTree<T>::destory(TreeNode<T>* root){
 		destory(root->rightChild);
 		delete root;
 	}
+}
+
+template<class T>
+inline TreeNode<char>* BinaryTree<T>::contructTree(const std::string& preorder, const std::string& inorder,
+	int preStart, int preEnd, int inStart, int inEnd){
+	TreeNode<T>* root = new TreeNode<char>(preorder[preStart]);
+	//找到root在中序遍历的位置
+	int position = inorder.find(preorder[preStart]);
+	int leftSize = position - inStart;//左子树大小
+	//如果有左子树
+	if (position != inStart) {
+		root->leftChild = contructTree(preorder, inorder, preStart + 1, preStart + leftSize, inStart, position - 1);
+	}
+	//如果有右子树
+	if (position != inEnd) {
+		//右子树的前序序列开头是左子树前序结尾加一
+		root->rightChild = contructTree(preorder, inorder, preStart+leftSize+1, preEnd, position + 1, inEnd);
+	}
+	return root;
 }
 
 template<class T>
