@@ -19,6 +19,8 @@ int main()
     BinaryTree<char> test;
     test.createFromPreorder("ABC####");
     test.createFromLevelorder("AB#CD##EF#G####");
+    //test.preVisit();
+    Stack<TreeNode<char>*> ancestor = test.find('E');
     std::cout << "Hello World!\n";
 }
 
