@@ -1,18 +1,19 @@
 #pragma once
+//BinaryTree
 #include <string>
 #include "LinkQueue.h"
 #include "Stack.h"
 #include <unordered_map>
 
 template<class T>
-struct TreeNode
-{
+struct TreeNode{
+	int priority = 0;//权值
 	T data;//数据
 	TreeNode* leftChild;//左孩子
 	TreeNode* rightChild;//右孩子
 	TreeNode():leftChild(nullptr),rightChild(nullptr){}
-	TreeNode(T _data,TreeNode* _leftChild=nullptr,TreeNode* _rightChild=nullptr)
-		:data(_data),leftChild(_leftChild),rightChild(_rightChild){}
+	TreeNode(T _data,int _priority=0,TreeNode* _leftChild=nullptr,TreeNode* _rightChild=nullptr)
+		:data(_data),priority(_priority),leftChild(_leftChild),rightChild(_rightChild){}
 
 	//比较运算符重载
 	bool operator ==(const TreeNode<T>& other)const { return this->data == other.data; }
@@ -38,7 +39,7 @@ private:
 		int preStart,int preEnd,int inStar,int inEnd);
 
 public:
-	BinaryTree():_root(nullptr){}
+	BinaryTree(TreeNode<T>* root=nullptr):_root(root){}
 
 	//从前序序列创建树
 	void createFromPreorder(const std::string preorder);

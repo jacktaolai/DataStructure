@@ -8,6 +8,14 @@
 #include <iostream>
 #include "BinaryTree.h"
 #include "LinkQueue.h"
+#include "Huffman.h"
+void printFrequencyMap(const std::unordered_map<char, int>& freqMap) {
+    int i = 0;
+    for (const auto& pair : freqMap) {
+        std::cout <<i<< "   字符: '" << pair.first << "' 出现次数: " << pair.second << '\n';
+        ++i;
+    }
+}
 int main()
 {
     LinkQueue<int> test2;
@@ -23,15 +31,20 @@ int main()
     Stack<TreeNode<char>*> ancestor = test.find('E');
     test.contructTree("ABDEGCFH", "DBGEACHF");
     std::cout << "Hello World!\n";
+
+
+    std::string filename = "test2.tif";
+    int numThreads = 16; // 线程数，可根据CPU核心数调整
+    std::vector<char> charSet(1024*1024*1024);
+    std::vector<unsigned int> fre(256);
+    readFile("test2.tif", charSet, 1024 * 1024 * 1024);
+    charFrequence(charSet, fre);
+    createHuffman(fre);
+   // auto frequencyMap = countCharacterFrequencyMultiThreaded(filename, numThreads);
+    //std::unordered_map<char, int> freqMap;
+    //countFrequencyInChunk(filename, freqMap);
+    //printFrequencyMap(freqMap);
+
+ 
+
 }
-
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
-
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
