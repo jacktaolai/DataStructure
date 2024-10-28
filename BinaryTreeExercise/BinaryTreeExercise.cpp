@@ -30,16 +30,21 @@ int main()
     //test.preVisit();
     Stack<TreeNode<char>*> ancestor = test.find('E');
     test.contructTree("ABDEGCFH", "DBGEACHF");
-    std::cout << "Hello World!\n";
+    std::string pre = test.getPreorder();
+    std::cout <<pre<<std::endl<< "Hello World!\n";
 
 
     std::string filename = "test2.tif";
     int numThreads = 16; // 线程数，可根据CPU核心数调整
     std::vector<char> charSet(1024*1024*1024);
     std::vector<unsigned int> fre(256);
-    readFile("test2.tif", charSet, 1024 * 1024 * 1024);
-    charFrequence(charSet, fre);
-    createHuffman(fre);
+
+    HuffmanCode huff;
+    huff.readFile("test2.tif", charSet, 1024 * 1024 * 1024);
+    huff.charFrequence(charSet, fre);
+    huff.createHuffman(fre);
+    huff.preorder  = huff.huffmanTree.getPreorder();
+    std::cout << huff.preorder << std::endl;
    // auto frequencyMap = countCharacterFrequencyMultiThreaded(filename, numThreads);
     //std::unordered_map<char, int> freqMap;
     //countFrequencyInChunk(filename, freqMap);

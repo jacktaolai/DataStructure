@@ -37,9 +37,14 @@ private:
 	//从前序和中序创建
 	TreeNode<char>* contructTree(const std::string& preorder, const std::string& inorder,
 		int preStart,int preEnd,int inStar,int inEnd);
-
+	//输出树的前序遍历（只针对节点是char或unsigned char时）
+	std::string getPreorder(TreeNode<T>* root);
 public:
+	//给定根节点重新构建树
+	void rebuildTree(TreeNode<T>* root) { _root = root; }
 	BinaryTree(TreeNode<T>* root=nullptr):_root(root){}
+	//输出树的前序遍历（只针对节点是char或unsigned char时）
+	std::string getPreorder();
 
 	//从前序序列创建树
 	void createFromPreorder(const std::string preorder);
@@ -54,6 +59,13 @@ public:
 	Stack<TreeNode<T>*> find(T key);
 	~BinaryTree() { destory(_root); }
 };
+
+template<class T>
+inline std::string BinaryTree<T>::getPreorder(){
+	if (!std::is_same<T, unsigned char>::value && !std::is_same<T, char>::value)
+		throw std::runtime_error("Wrong data type!");
+	return getPreorder(_root);
+}
 
 template<class T>
 void BinaryTree<T>::createFromPreorder(const std::string preorder){
@@ -170,6 +182,16 @@ inline TreeNode<char>* BinaryTree<T>::contructTree(const std::string& preorder, 
 		root->rightChild = contructTree(preorder, inorder, preStart+leftSize+1, preEnd, position + 1, inEnd);
 	}
 	return root;
+}
+
+template<class T>
+std::string BinaryTree<T>::getPreorder(TreeNode<T>* root){
+	if (root == nullptr) return "#";
+	std::string preorder;
+	preorder += static_cast<char>(root->data);//添加根节点数据
+	preorder += getPreorder(root->leftChild);//左子树的先序遍历结果
+	preorder += getPreorder(root->rightChild);//右子树的先序遍历结果
+	return preorder;
 }
 
 template<class T>
