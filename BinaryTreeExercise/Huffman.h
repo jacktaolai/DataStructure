@@ -9,6 +9,7 @@
 #include <mutex>
 #include "BinaryTree.h"
 #include "PriorityQueue.h"
+#include <bitset>
 
 class HuffmanCode {
 public:
@@ -23,12 +24,71 @@ public:
     void readFile(const std::string& fileName, std::vector<char>& charSet, int size);
     //统计字符集里各BYTE[0-255]出现的次数，vector的第n位就代表第BYTE值为n
     void charFrequence(const std::vector<char>& charSet, std::vector<unsigned int>& frequence);
+    void charFrequence(const std::vector<char>& charSet) { charFrequence(charSet, byteFrequence); }
+
     //使用递归方式获取哈夫曼编码
     void getHuffmanCode();
-    void getHuffmanCode(std::string&codePath,std::string* huffmanCode, TreeNode<unsigned char>* root);
+    void getHuffmanCode(TreeNode<unsigned char>* root, std::string* huffmanCode, const std::string& codePath);
+
 public:
     HuffmanCode() :byteFrequence(256, 0){}
     HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) {};
+    //压缩函数
+    void compress(const std::string& outputFileName) {
+        std::ifstream inputFile(_fileName, std::ios::binary);
+        if (!inputFile) {
+            throw std::runtime_error("Failed to open the file!");
+            return;
+        }
+
+        std::vector<char> charSet((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+        inputFile.close();
+
+        //统计字符频率
+        charFrequence(charSet);
+        //创建哈夫曼树
+        createHuffman(byteFrequence);
+        //获取哈夫曼编码
+        getHuffmanCode();
+
+        //创建输出文件
+        std::ofstream outputFile(outputFileName, std::ios::binary);
+        if (!outputFile) {
+            throw std::runtime_error("Filed to create output file: ") ;
+            return;
+        }
+        //第一行对应文件名
+        outputFile << _fileName;
+
+
+        //将字符转为哈夫曼编码
+        std::string encodedData;
+        for (char c : charSet) {
+            encodedData += huffmanCode[static_cast<unsigned char>(c)];
+        }
+        //将编码后的数据按字节写入文件
+        std::vector<unsigned char> outputBytes;
+        unsigned char Byte=0;
+        int bitCount = 0;
+        for (char bit : encodedData) {
+            Byte = (bit == '1') ? (Byte << 1) | 1 : (Byte << 1) | 0;//实现字符到二进制的转换
+            bitCount++;
+            if (bitCount == 8) {//每8位生成一个字节
+                outputBytes.push_back(Byte);
+                Byte = 0;
+                bitCount = 0;
+            }
+        }
+        //最后结束如果不满8位的话
+        if (bitCount > 0) {
+            Byte = Byte << (8 - bitCount);
+            outputBytes.push_back(Byte);
+        }
+
+        //写入压缩后的字节到文件
+        outputFile.write(reinterpret_cast<const char*>(outputBytes.data()), outputBytes.size());
+        outputFile.close();
+    }
 };
 
 

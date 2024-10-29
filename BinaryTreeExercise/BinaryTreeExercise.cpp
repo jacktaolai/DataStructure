@@ -36,14 +36,16 @@ int main()
 
     std::string filename = "test2.tif";
     int numThreads = 16; // 线程数，可根据CPU核心数调整
-    std::vector<char> charSet(1024*1024*1024);
+    std::vector<char> charSet(11388960);
     std::vector<unsigned int> fre(256);
 
     HuffmanCode huff;
-    huff.readFile("test.txt", charSet, 1024 * 1024 * 1024);
-    huff.charFrequence(charSet, fre);
-    huff.createHuffman(fre);
-    huff.getHuffmanCode();
+    huff._fileName = "编码解码-英文测试数据.txt";
+    //huff.readFile("编码解码-英文测试数据.txt", charSet, 1138860 );
+    //huff.charFrequence(charSet, fre);
+    //huff.createHuffman(fre);
+    //huff.getHuffmanCode();
+    huff.compress("test2.huf");
     //huff.preorder  = huff.huffmanTree.getPreorder();
     //std::cout << huff.preorder << std::endl;
    // auto frequencyMap = countCharacterFrequencyMultiThreaded(filename, numThreads);

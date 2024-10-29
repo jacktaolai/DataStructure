@@ -12,7 +12,7 @@ void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
         TreeNode<unsigned char>* leftChild = forestRoot.dequeue();
         TreeNode<unsigned char>* rightChild = forestRoot.dequeue();
         //以两个孩子的权值作为权值
-        //此处的非叶子节点统一数据存0，通过判断有无左右孩子判断是否子节点
+        //此处的非叶子节点统一数据存0，以后通过判断有无左右孩子判断是否子节点
         TreeNode<unsigned char>* newNode = new TreeNode<unsigned char>(0, leftChild->priority + rightChild->priority);
         newNode->leftChild = leftChild;
         newNode->rightChild = rightChild;
@@ -63,17 +63,16 @@ void HuffmanCode::charFrequence(const std::vector<char>& charSet, std::vector<un
 void HuffmanCode::getHuffmanCode(){
     if (huffmanTree.getRoot() == nullptr) throw std::runtime_error("Tree is empty!");
     std::string codePath = "";//左为0右为1
-    getHuffmanCode(codePath,huffmanCode, huffmanTree.getRoot());
+    getHuffmanCode(huffmanTree.getRoot(), huffmanCode,codePath );
 }
-void HuffmanCode::getHuffmanCode(std::string &codePath,std::string* huffmanCode, TreeNode<unsigned char>* root) {
-    //哈夫曼没有度为1的节点故只需要判断左孩子空否
-    if (root->leftChild == nullptr) { 
-        huffmanCode[root->data] = codePath;
-        codePath.pop_back();//移除最后一个字符回退上一级
-        return;
+void HuffmanCode::getHuffmanCode(TreeNode<unsigned char>* root,std::string* huffmanCode, const std::string& codePath) {
+        //如果当前节点是叶子节点，存储编码
+        if (root->leftChild == nullptr && root->rightChild == nullptr) {
+            huffmanCode[root->data] = codePath;
+            return;
+        }
+        //左子树则加 '0'
+        getHuffmanCode(root->leftChild, huffmanCode,codePath + '0' );
+        //右子树则加 '1'
+        getHuffmanCode(root->rightChild, huffmanCode,codePath + '1');
     }
-    codePath += '0';
-    getHuffmanCode(codePath, huffmanCode, root->leftChild);
-    codePath += "1";
-    getHuffmanCode(codePath, huffmanCode, root->rightChild);
-}
