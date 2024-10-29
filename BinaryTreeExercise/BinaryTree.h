@@ -40,6 +40,7 @@ private:
 	//输出树的前序遍历（只针对节点是char或unsigned char时）
 	std::string getPreorder(TreeNode<T>* root);
 public:
+	TreeNode<T>* getRoot() { return _root; }
 	//给定根节点重新构建树
 	void rebuildTree(TreeNode<T>* root) { _root = root; }
 	BinaryTree(TreeNode<T>* root=nullptr):_root(root){}

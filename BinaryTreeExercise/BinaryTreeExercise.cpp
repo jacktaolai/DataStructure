@@ -40,16 +40,22 @@ int main()
     std::vector<unsigned int> fre(256);
 
     HuffmanCode huff;
-    huff.readFile("test2.tif", charSet, 1024 * 1024 * 1024);
+    huff.readFile("test.txt", charSet, 1024 * 1024 * 1024);
     huff.charFrequence(charSet, fre);
     huff.createHuffman(fre);
-    huff.preorder  = huff.huffmanTree.getPreorder();
-    std::cout << huff.preorder << std::endl;
+    huff.getHuffmanCode();
+    //huff.preorder  = huff.huffmanTree.getPreorder();
+    //std::cout << huff.preorder << std::endl;
    // auto frequencyMap = countCharacterFrequencyMultiThreaded(filename, numThreads);
     //std::unordered_map<char, int> freqMap;
     //countFrequencyInChunk(filename, freqMap);
     //printFrequencyMap(freqMap);
 
- 
+     // 循环输出每个非空编码
+    for (int i = 0; i < 256; ++i) {
+
+            std::cout << "huffmanCode[" << i << "] = " << huff.huffmanCode[i] << '\n';
+
+    }
 
 }

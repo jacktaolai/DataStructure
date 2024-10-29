@@ -12,8 +12,10 @@
 
 class HuffmanCode {
 public:
-    BinaryTree<unsigned char> huffmanTree;
-    std::string preorder;//储存哈夫曼树前序遍历，空孩子用#表示，方便重新构建树
+    std::string _fileName;
+    BinaryTree<unsigned char> huffmanTree;//根据文件创建的哈夫曼树
+    //std::string preorder;//储存哈夫曼树前序遍历，空孩子用#表示，方便重新构建树
+    std::vector<unsigned int> byteFrequence;//储存每种字节出现频率
     std::string huffmanCode[256];//存储每一位BYTE对应的编码，也可用std::unorder_map实现
     //根据频率创建二叉树
     void createHuffman(const std::vector<unsigned int>& frequence);
@@ -21,8 +23,12 @@ public:
     void readFile(const std::string& fileName, std::vector<char>& charSet, int size);
     //统计字符集里各BYTE[0-255]出现的次数，vector的第n位就代表第BYTE值为n
     void charFrequence(const std::vector<char>& charSet, std::vector<unsigned int>& frequence);
-
-
+    //使用递归方式获取哈夫曼编码
+    void getHuffmanCode();
+    void getHuffmanCode(std::string&codePath,std::string* huffmanCode, TreeNode<unsigned char>* root);
+public:
+    HuffmanCode() :byteFrequence(256, 0){}
+    HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) {};
 };
 
 

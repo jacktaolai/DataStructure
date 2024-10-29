@@ -59,3 +59,21 @@ void HuffmanCode::charFrequence(const std::vector<char>& charSet, std::vector<un
         frequence[byte]++;
     }
 }
+
+void HuffmanCode::getHuffmanCode(){
+    if (huffmanTree.getRoot() == nullptr) throw std::runtime_error("Tree is empty!");
+    std::string codePath = "";//左为0右为1
+    getHuffmanCode(codePath,huffmanCode, huffmanTree.getRoot());
+}
+void HuffmanCode::getHuffmanCode(std::string &codePath,std::string* huffmanCode, TreeNode<unsigned char>* root) {
+    //哈夫曼没有度为1的节点故只需要判断左孩子空否
+    if (root->leftChild == nullptr) { 
+        huffmanCode[root->data] = codePath;
+        codePath.pop_back();//移除最后一个字符回退上一级
+        return;
+    }
+    codePath += '0';
+    getHuffmanCode(codePath, huffmanCode, root->leftChild);
+    codePath += "1";
+    getHuffmanCode(codePath, huffmanCode, root->rightChild);
+}
