@@ -35,6 +35,7 @@ public:
     HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) {};
     //Ñ¹Ëõº¯Êý
     void compress(const std::string& outputFileName);
+    //½âÑ¹º¯Êý
     void decompress(const std::string& inputFileName);
 };
 

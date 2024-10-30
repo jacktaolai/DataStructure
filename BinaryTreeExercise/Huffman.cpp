@@ -160,26 +160,26 @@ void HuffmanCode::decompress(const std::string& inputFileName){
     //重建哈夫曼树
     createHuffman(byteFrequence);
 
-         // 读取压缩内容到内存
-        std::string compressedData((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-        inputFile.close(); // 关闭输入文件
+    // 读取压缩内容到内存
+    std::string compressedData((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+    inputFile.close(); // 关闭输入文件
 
-        // 解码压缩内容并将结果存储到内存
-        std::string decompressedData;
-        TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();
-        for (char byte : compressedData) {
-            // 每字节从高位到低位解码
-            for (int i = 7; i >= 0; --i) {
-                bool bit = (byte & (1 << i)) != 0;
-                currentNode = bit ? currentNode->rightChild : currentNode->leftChild;
+    // 解码压缩内容并将结果存储到内存
+    std::string decompressedData;
+    TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();
+    for (char byte : compressedData) {
+        // 每字节从高位到低位解码
+        for (int i = 7; i >= 0; --i) {
+            bool bit = (byte & (1 << i)) != 0;
+            currentNode = bit ? currentNode->rightChild : currentNode->leftChild;
 
-                // 如果到达叶子节点，输出字符并重置到根节点
-                if (currentNode->leftChild == nullptr && currentNode->rightChild == nullptr) {
-                    decompressedData.push_back(static_cast<char>(currentNode->data));
-                    currentNode = huffmanTree.getRoot();
-                }
+            // 如果到达叶子节点，输出字符并重置到根节点
+            if (currentNode->leftChild == nullptr && currentNode->rightChild == nullptr) {
+                decompressedData.push_back(static_cast<char>(currentNode->data));
+                currentNode = huffmanTree.getRoot();
             }
         }
+    }
 
         // 将解压缩的数据写入文件
         std::ofstream outputFile(_fileName, std::ios::binary);
