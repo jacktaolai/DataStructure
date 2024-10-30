@@ -40,7 +40,7 @@ int main()
     std::vector<unsigned int> fre(256);
 
     HuffmanCode huff;
-    huff._fileName = "tif2002Raw_re.tif";
+    huff._fileName = "2020年全国_GLC30_30米土地覆盖数据.tif";
     //huff.readFile("编码解码-英文测试数据.txt", charSet, 1138860 );
     //huff.charFrequence(charSet, fre);
     //huff.createHuffman(fre);
