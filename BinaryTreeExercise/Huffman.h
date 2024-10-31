@@ -3,8 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
-#include <vector>
+#include <windows.h>
 #include <thread>
 #include <mutex>
 #include "BinaryTree.h"
@@ -13,7 +12,10 @@
 
 class HuffmanCode {
 public:
-    std::string _fileName;
+    std::string _fileName;//文件名
+    unsigned int _avaiableMermory;//可用内存
+    unsigned int _fileSize=0;//文件大小
+    unsigned int _threadNum;//线程数
     BinaryTree<unsigned char> huffmanTree;//根据文件创建的哈夫曼树
     //std::string preorder;//储存哈夫曼树前序遍历，空孩子用#表示，方便重新构建树
     std::vector<unsigned int> byteFrequence;//储存每种字节出现频率
@@ -25,14 +27,20 @@ public:
     //统计字符集里各BYTE[0-255]出现的次数，vector的第n位就代表第BYTE值为n
     void charFrequence(const std::vector<char>& charSet, std::vector<unsigned int>& frequence);
     void charFrequence(const std::vector<char>& charSet) { charFrequence(charSet, byteFrequence); }
-
+    //通过WindowsAPI获取可用内存
+    void getMemory();
+    //获取文件大小
+    void getFilesize();
     //使用递归方式获取哈夫曼编码
     void getHuffmanCode();
     void getHuffmanCode(TreeNode<unsigned char>* root, std::string* huffmanCode, const std::string& codePath);
 
 public:
-    HuffmanCode() :byteFrequence(256, 0){}
-    HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) {};
+    HuffmanCode() :byteFrequence(256, 0) { getMemory(); }
+    HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) { 
+        getMemory(); 
+        getFilesize();
+    };
     //压缩函数
     void compress(const std::string& outputFileName);
     //解压函数

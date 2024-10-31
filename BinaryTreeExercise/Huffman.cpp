@@ -4,7 +4,7 @@
 void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
     //按频率从小到大创建优先队列，将节点存入队列，节点包含unsigned char和其对应的频率
     PriorityLinkQueue<TreeNode<unsigned char>*> forestRoot;
-    for (int i = 0; i <= 255; ++i) {
+    for (int i = 0; i < 256; ++i) {
         forestRoot.enqueue(new TreeNode<unsigned char>(i, frequence[i]), frequence[i]);
     }
     while (forestRoot.getSize() > 1) {
@@ -42,6 +42,26 @@ void HuffmanCode::charFrequence(const std::vector<char>& charSet, std::vector<un
     }
 }
 
+void HuffmanCode::getMemory(){
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof(statex);
+    GlobalMemoryStatusEx(&statex);
+    _avaiableMermory = statex.ullAvailPhys;
+}
+
+void HuffmanCode::getFilesize(){
+    std::ifstream file(_fileName, std::ios::binary | std::ios::ate);//打开文件并移动到末尾
+    if (file.is_open()) {
+        _fileSize = static_cast<unsigned int>(file.tellg());//获取文件大小
+        file.close();
+    }
+    else {
+        _fileSize = 0;
+        std::cerr << "Failed to open file: " << _fileName << std::endl;
+    }
+    
+}
+
 void HuffmanCode::getHuffmanCode(){
     if (huffmanTree.getRoot() == nullptr) throw std::runtime_error("Tree is empty!");
     std::string codePath = "";//左为0右为1
@@ -65,9 +85,13 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     if (!inputFile) {
         throw std::runtime_error("Failed to open the file!");
     }
+    //warning!这里涉及扩容会影响时间
+    std::vector<char> charSet;
+    charSet.reserve(1726703264); // 预留 1.7GB 的空间
 
-    std::vector<char> charSet((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-    inputFile.close();
+    charSet.insert(charSet.end(),
+        std::istreambuf_iterator<char>(inputFile),
+        std::istreambuf_iterator<char>());
 
     //统计字符频率
     charFrequence(charSet);
