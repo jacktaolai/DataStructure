@@ -27,7 +27,7 @@ public:
     void readFile(const std::string& fileName, std::vector<char>& charSet, int size);
     //统计字符集里各BYTE[0-255]出现的次数，vector的第n位就代表第BYTE值为n
     void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence);
-    void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence, unsigned int start,unsigned int end);
+    void charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence);
     void charFrequence(const std::string& charSet) { charFrequence(charSet, byteFrequence); }
     //通过WindowsAPI获取可用内存
     void getMemory();
@@ -47,8 +47,8 @@ public:
     void compress(const std::string& outputFileName);
     //解压函数
     void decompress(const std::string& inputFileName);
-    //多线程
-    void multithreading();
+    //多线程统计字符频率
+    void parallelCharFrequency();
 };
 
 

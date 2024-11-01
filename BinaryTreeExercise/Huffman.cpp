@@ -41,15 +41,28 @@ void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned
         frequence[byte]++;
     }
 }
-void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence,unsigned int start, unsigned int end) {
-    //当前线程的频率
-    std::vector<unsigned int> threadFre(256);
-    for (int i = start; i < end; ++i) {
-        threadFre[static_cast<unsigned char>(charSet[i])]++;
+void HuffmanCode::charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence) {
+    // 局部字符频率表
+    std::vector<unsigned int> localFre(256, 0);
+
+    // 每个线程打开自己的文件流
+    std::ifstream inputFile(_fileName, std::ios::binary);
+    inputFile.seekg(start);
+
+    // 读取指定范围的内容
+    unsigned int readLength = end - start;
+    std::string partContent(readLength,0);
+    inputFile.read(&partContent[0], readLength);
+
+    // 统计当前线程的频率
+    for (char ch : partContent) {
+        localFre[static_cast<unsigned char>(ch)]++;
     }
+
+    // 锁定合并频率表
     for (int i = 0; i < 256; ++i) {
         mtx.lock();
-        frequence[i] = threadFre[i];
+        frequence[i] += localFre[i];
         mtx.unlock();
     }
 }
@@ -97,21 +110,18 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     if (!inputFile) {
         throw std::runtime_error("Failed to open the file!");
     }
-    //warning!这里涉及扩容会影响时间
-    std::string charSet;
-    charSet.reserve(1726703264); // 预留 1.7GB 的空间
 
-    charSet.insert(charSet.begin(),
-        std::istreambuf_iterator<char>(inputFile),
-        std::istreambuf_iterator<char>());
 
     //统计字符频率
-    charFrequence(charSet);
+    parallelCharFrequency();
     //创建哈夫曼树
     createHuffman(byteFrequence);
     //获取哈夫曼编码
     getHuffmanCode();
-
+    //该函数空间复杂度为2n，故文件大小与二分之一可用空间比
+    unsigned length = _fileSize < _avaiableMermory/2 ? _fileSize : _avaiableMermory/2;
+    std::string charSet(length,0);//存放在内存里的文件
+    inputFile.read(&charSet[0], length);
     //创建输出文件
     std::ofstream outputFile(outputFileName, std::ios::binary);
     if (!outputFile) {
@@ -228,42 +238,27 @@ void HuffmanCode::decompress(const std::string& inputFileName){
 
 }
 
-void HuffmanCode::multithreading() {
-    std::ifstream inputFile(_fileName,std::ios::binary);
-    if (!inputFile) { 
-        throw std::runtime_error("Failed to open file!"); 
-    }
+void HuffmanCode::parallelCharFrequency() {
 
-    // 读取压缩内容到内存
-    std::string fileContent;
-    fileContent.reserve((_fileSize< _avaiableMermory)?_fileSize:_avaiableMermory);
-    inputFile.read(&fileContent[0], fileContent.capacity());
-    //fileContent.resize(inputFile.gcount());  // 调整实际读取到的字节数
-    
-    // 关闭输入文件
-    inputFile.close();
-
-    int length = fileContent.size(); // 计算长度
-    int threadLength = length / _threadNum;
+    //如果文件比可用内存小就以文件大小为最大配置内存
+    unsigned length = _fileSize < _avaiableMermory ? _fileSize : _avaiableMermory;
+    //计算每个线程应该读取的长度
+    unsigned int threadLength = length / _threadNum;
     std::vector<std::thread> threads;
-
     for (int i = 0; i < _threadNum; ++i) {
         unsigned int start = i * threadLength;
-        unsigned int end = (i == _threadNum - 1) ? length : (i + 1) * threadLength;
-
-        // 启动线程并统计字符频率
-        threads.emplace_back([this, &fileContent, start, end]() {
-            charFrequence(fileContent, byteFrequence, start, end);
+        unsigned int end = (i == _threadNum - 1) ? _fileSize : (i + 1) * threadLength;
+        //因为在类内，所以使用匿名函数构建线程
+        threads.emplace_back([this, start, end]() {
+            charFrequence(start, end, byteFrequence);
             });
     }
-
-    // 等待所有线程完成
+    //等待所有线程完成
     for (auto& thread : threads) {
-        if (thread.joinable()) {
-            thread.join();
-        }
+        thread.join();
     }
 }
+
 
 
 
