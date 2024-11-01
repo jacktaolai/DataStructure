@@ -15,7 +15,8 @@ public:
     std::string _fileName;//文件名
     unsigned int _avaiableMermory;//可用内存
     unsigned int _fileSize=0;//文件大小
-    unsigned int _threadNum;//线程数
+    unsigned int _threadNum=16;//线程数
+    std::mutex mtx;//互斥锁
     BinaryTree<unsigned char> huffmanTree;//根据文件创建的哈夫曼树
     //std::string preorder;//储存哈夫曼树前序遍历，空孩子用#表示，方便重新构建树
     std::vector<unsigned int> byteFrequence;//储存每种字节出现频率
@@ -25,8 +26,9 @@ public:
     //从文件里读取size大小字节到内存中
     void readFile(const std::string& fileName, std::vector<char>& charSet, int size);
     //统计字符集里各BYTE[0-255]出现的次数，vector的第n位就代表第BYTE值为n
-    void charFrequence(const std::vector<char>& charSet, std::vector<unsigned int>& frequence);
-    void charFrequence(const std::vector<char>& charSet) { charFrequence(charSet, byteFrequence); }
+    void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence);
+    void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence, unsigned int start,unsigned int end);
+    void charFrequence(const std::string& charSet) { charFrequence(charSet, byteFrequence); }
     //通过WindowsAPI获取可用内存
     void getMemory();
     //获取文件大小
@@ -45,6 +47,8 @@ public:
     void compress(const std::string& outputFileName);
     //解压函数
     void decompress(const std::string& inputFileName);
+    //多线程
+    void multithreading();
 };
 
 

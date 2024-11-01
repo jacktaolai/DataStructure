@@ -36,9 +36,21 @@ void HuffmanCode::readFile(const std::string& fileName, std::vector<char>& charS
     std::cout << "实际读取的字节数: " << bytesRead << std::endl;
     file.close();
 }
-void HuffmanCode::charFrequence(const std::vector<char>& charSet, std::vector<unsigned int>& frequence) {
+void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence) {
     for (unsigned char byte : charSet) {
         frequence[byte]++;
+    }
+}
+void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence,unsigned int start, unsigned int end) {
+    //当前线程的频率
+    std::vector<unsigned int> threadFre(256);
+    for (int i = start; i < end; ++i) {
+        threadFre[static_cast<unsigned char>(charSet[i])]++;
+    }
+    for (int i = 0; i < 256; ++i) {
+        mtx.lock();
+        frequence[i] = threadFre[i];
+        mtx.unlock();
     }
 }
 
@@ -86,10 +98,10 @@ void HuffmanCode::compress(const std::string& outputFileName) {
         throw std::runtime_error("Failed to open the file!");
     }
     //warning!这里涉及扩容会影响时间
-    std::vector<char> charSet;
+    std::string charSet;
     charSet.reserve(1726703264); // 预留 1.7GB 的空间
 
-    charSet.insert(charSet.end(),
+    charSet.insert(charSet.begin(),
         std::istreambuf_iterator<char>(inputFile),
         std::istreambuf_iterator<char>());
 
@@ -215,5 +227,43 @@ void HuffmanCode::decompress(const std::string& inputFileName){
 
 
 }
+
+void HuffmanCode::multithreading() {
+    std::ifstream inputFile(_fileName,std::ios::binary);
+    if (!inputFile) { 
+        throw std::runtime_error("Failed to open file!"); 
+    }
+
+    // 读取压缩内容到内存
+    std::string fileContent;
+    fileContent.reserve((_fileSize< _avaiableMermory)?_fileSize:_avaiableMermory);
+    inputFile.read(&fileContent[0], fileContent.capacity());
+    //fileContent.resize(inputFile.gcount());  // 调整实际读取到的字节数
+    
+    // 关闭输入文件
+    inputFile.close();
+
+    int length = fileContent.size(); // 计算长度
+    int threadLength = length / _threadNum;
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < _threadNum; ++i) {
+        unsigned int start = i * threadLength;
+        unsigned int end = (i == _threadNum - 1) ? length : (i + 1) * threadLength;
+
+        // 启动线程并统计字符频率
+        threads.emplace_back([this, &fileContent, start, end]() {
+            charFrequence(fileContent, byteFrequence, start, end);
+            });
+    }
+
+    // 等待所有线程完成
+    for (auto& thread : threads) {
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
+}
+
 
 
