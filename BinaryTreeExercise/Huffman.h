@@ -32,7 +32,7 @@ public:
     //通过WindowsAPI获取可用内存
     void getMemory();
     //获取文件大小
-    void getFilesize();
+    void getFilesize(std::string fileName);
     //使用递归方式获取哈夫曼编码
     void getHuffmanCode();
     void getHuffmanCode(TreeNode<unsigned char>* root, std::string* huffmanCode, const std::string& codePath);
@@ -41,7 +41,7 @@ public:
     HuffmanCode() :byteFrequence(256, 0) { getMemory(); }
     HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) { 
         getMemory(); 
-        getFilesize();
+        getFilesize(_fileName);
     };
     //压缩函数
     void compress(const std::string& outputFileName);

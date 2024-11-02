@@ -40,16 +40,21 @@ int main()
     std::vector<unsigned int> fre(256);
 
     //HuffmanCode huff("PixPin_2024-10-30_03-27-26.png");
-    //HuffmanCode huff("未来城正射影像-2.jpg");
+    HuffmanCode huff("未来城正射影像-2.jpg");
+    //HuffmanCode huff("test2.huf");
+
     //HuffmanCode huff("新建文件夹");
     //HuffmanCode huff("编码解码-英文测试数据.txt");
+    //HuffmanCode huff("新建 文本文档.txt");
+
     //HuffmanCode huff("tif2002Raw_re.tif");
-    HuffmanCode huff("2020年全国_GLC30_30米土地覆盖数据.tif");
+    //HuffmanCode huff("2020年全国_GLC30_30米土地覆盖数据.tif");
     //huff.multithreading();
     //huff.readFile("编码解码-英文测试数据.txt", charSet, 1138860 );
     //huff.charFrequence(charSet, fre);
     //huff.createHuffman(fre);
     //huff.getHuffmanCode();
+    huff._avaiableMermory = 10*1024*1024;
     std::cout << "可用内存"<<huff._avaiableMermory / 1024 / 1024 / 1024 << std::endl;
     huff.compress("test2.huf");
     for (int i = 0; i < 256; ++i) {

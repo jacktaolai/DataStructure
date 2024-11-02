@@ -74,15 +74,15 @@ void HuffmanCode::getMemory(){
     _avaiableMermory = statex.ullAvailPhys;
 }
 
-void HuffmanCode::getFilesize(){
-    std::ifstream file(_fileName, std::ios::binary | std::ios::ate);//打开文件并移动到末尾
+void HuffmanCode::getFilesize(std::string fileName){
+    std::ifstream file(fileName, std::ios::binary | std::ios::ate);//打开文件并移动到末尾
     if (file.is_open()) {
         _fileSize = static_cast<unsigned int>(file.tellg());//获取文件大小
         file.close();
     }
     else {
         _fileSize = 0;
-        std::cerr << "Failed to open file: " << _fileName << std::endl;
+        std::cerr << "Failed to open file: " << fileName << std::endl;
     }
     
 }
@@ -118,10 +118,6 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     createHuffman(byteFrequence);
     //获取哈夫曼编码
     getHuffmanCode();
-    //该函数空间复杂度为2n，故文件大小与二分之一可用空间比
-    unsigned length = _fileSize < _avaiableMermory/2 ? _fileSize : _avaiableMermory/2;
-    std::string charSet(length,0);//存放在内存里的文件
-    inputFile.read(&charSet[0], length);
     //创建输出文件
     std::ofstream outputFile(outputFileName, std::ios::binary);
     if (!outputFile) {
@@ -140,24 +136,37 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     }
     outputFile << '\n';
 
-    //将字符转为哈夫曼编码
-    std::string encodedData="";
+    //该函数空间复杂度为2n，故文件大小与二分之一可用空间比
+    unsigned length = _fileSize < (_avaiableMermory / 2) ? _fileSize : (_avaiableMermory / 2);
+    int times = (_fileSize + length - 1) / length;
+    std::string encodedData = "";
+    std::string outputBytes = "";
     int bitCount = 0;
-    //将编码后的数据按字节写入文件
-    std::vector<unsigned char> outputBytes;
     unsigned char Byte = 0;
-    for (char c : charSet) {
-        encodedData += huffmanCode[static_cast<unsigned char>(c)];
-        for (char bit : encodedData) {
-            Byte = (bit == '1') ? (Byte << 1) | 1 : (Byte << 1) | 0;//实现字符到二进制的转换
-            bitCount++;
-            if (bitCount == 8) {//每8位生成一个字节
-                outputBytes.push_back(Byte);
-                Byte = 0;
-                bitCount = 0;
+    for (int i = 1; i <= times; ++i) {
+        //确保最后一次循环的length是对的
+        length = (i == times) ? (_fileSize - (times - 1) * length) : length;
+        std::string charSet(length, 0);//存放在内存里的文件
+        inputFile.read(&charSet[0], length);
+        //将字符转为哈夫曼编码
+        for (char c : charSet) {
+            encodedData += huffmanCode[static_cast<unsigned char>(c)];
+            for (char bit : encodedData) {
+                Byte = (bit == '1') ? (Byte << 1) | 1 : (Byte << 1) | 0;//实现字符到二进制的转换
+                bitCount++;
+                if (bitCount == 8) {//每8位生成一个字节
+                    outputBytes.push_back(Byte);
+                    Byte = 0;
+                    bitCount = 0;
+                }
             }
+            //将string的内存置空而且把位置空出来
+            encodedData.clear();
         }
-        encodedData = "";
+        //写入压缩后的字节到文件
+        outputFile.write(outputBytes.c_str(), outputBytes.size());
+        outputBytes.clear();
+        outputBytes.resize(0);
     }
     //最后结束如果不满8位的话
     if (bitCount > 0) {
@@ -167,6 +176,7 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     //写入压缩后的字节到文件
     outputFile.write(reinterpret_cast<const char*>(outputBytes.data()), outputBytes.size());
     outputFile.close();
+    inputFile.close();
 }
 
 void HuffmanCode::decompress(const std::string& inputFileName){
@@ -205,35 +215,52 @@ void HuffmanCode::decompress(const std::string& inputFileName){
     if (ch != '\n') { throw std::runtime_error("File is broken!"); }
     //重建哈夫曼树
     createHuffman(byteFrequence);
-
-    //读取压缩内容到内存
-    std::string compressedData((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
-    inputFile.close(); //关闭输入文件
-
-    //解码压缩内容并将结果存储到内存
-    std::string decompressedData;
-    TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();
-    for (char byte : compressedData) {
-        //每字节从高位到低位解码
-        for (int i = 7; i >= 0; --i) {
-            bool bit = (byte & (1 << i)) != 0;
-            currentNode = bit ? currentNode->rightChild : currentNode->leftChild;
-            //如果到达叶子节点，输出字符并重置到根节点
-            if (currentNode->leftChild == nullptr && currentNode->rightChild == nullptr) {
-                decompressedData.push_back(static_cast<char>(currentNode->data));
-                currentNode = huffmanTree.getRoot();
-            }
-        }
-    }
-
-    //将解压缩的数据写入文件
+    //创建输出文件
     std::ofstream outputFile(_fileName, std::ios::binary);
     if (!outputFile) {
         throw std::runtime_error("Failed to create output file!");
     }
-    outputFile.write(decompressedData.data(), decompressedData.size());
-    outputFile.close();
+    std::streampos currentPos = inputFile.tellg();
 
+    //计算真正的压缩内容有多大（除头说明内容）
+    inputFile.seekg(0,std::ios::end);
+    unsigned int compressedFileSize = static_cast<unsigned int>(inputFile.tellg() - currentPos);
+    inputFile.seekg(currentPos);
+    //该函数空间复杂度为2n，故文件大小与二分之一可用内存比
+    unsigned length = compressedFileSize < (_avaiableMermory / 2) ? compressedFileSize : (_avaiableMermory / 2);
+    int times = (compressedFileSize + length - 1) / length;
+    //解码压缩内容并将结果存储到内存
+    std::string decompressedData;
+    TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();//根据编码游走到的节点
+    for (int i = 1; i <= times; ++i) {
+
+        //确保最后一次循环的length是对的
+        length = (i == times) ? (compressedFileSize - (times - 1) * length) : length;
+        //读取压缩内容到内存
+        std::string compressedData(length, 0);
+        inputFile.read(&compressedData[0], length);
+
+
+        for (char byte : compressedData) {
+            //每字节从高位到低位解码
+            for (int i = 7; i >= 0; --i) {
+                bool bit = (byte & (1 << i)) != 0;//取出最高位
+                currentNode = bit ? currentNode->rightChild : currentNode->leftChild;
+                //如果到达叶子节点，输出字符并重置到根节点
+                if (currentNode->leftChild == nullptr && currentNode->rightChild == nullptr) {
+                    decompressedData.push_back(static_cast<char>(currentNode->data));
+                    currentNode = huffmanTree.getRoot();
+                }
+            }
+        }
+        //将当前块写入
+        outputFile.write(decompressedData.c_str(), decompressedData.size());
+        decompressedData.clear();
+    }
+
+    outputFile.write(decompressedData.c_str(), decompressedData.size());
+    outputFile.close();
+    inputFile.close();
 
 
 }
@@ -242,20 +269,26 @@ void HuffmanCode::parallelCharFrequency() {
 
     //如果文件比可用内存小就以文件大小为最大配置内存
     unsigned length = _fileSize < _avaiableMermory ? _fileSize : _avaiableMermory;
-    //计算每个线程应该读取的长度
-    unsigned int threadLength = length / _threadNum;
-    std::vector<std::thread> threads;
-    for (int i = 0; i < _threadNum; ++i) {
-        unsigned int start = i * threadLength;
-        unsigned int end = (i == _threadNum - 1) ? _fileSize : (i + 1) * threadLength;
-        //因为在类内，所以使用匿名函数构建线程
-        threads.emplace_back([this, start, end]() {
-            charFrequence(start, end, byteFrequence);
-            });
-    }
-    //等待所有线程完成
-    for (auto& thread : threads) {
-        thread.join();
+    int times = (_fileSize+length-1) / length;//循环读取次数等于文件大小除每次读取向上取整、
+    for (int i = 1; i <= times; ++i) {
+        //最后一次length可能小于原来length
+        length = (i == times) ? (_fileSize - (times - 1) * length) : length;
+        //计算每个线程应该读取的长度
+        unsigned int threadLength = length / _threadNum;
+        std::vector<std::thread> threads;
+        unsigned int globalOffset = (i-1) * length;//当前批次的起始位置对于整个文件的偏移量
+        for (int j = 0; j < _threadNum; ++j) {
+            unsigned int start = globalOffset + j * threadLength;
+            unsigned int end = (j == _threadNum - 1) ? (globalOffset + length) : (globalOffset + (j + 1) * threadLength);            
+            //因为在类内，所以使用匿名函数构建线程
+            threads.emplace_back([this, start, end]() {
+                charFrequence(start, end, byteFrequence);
+                });
+        }
+        //等待所有线程完成
+        for (auto& thread : threads) {
+            thread.join();
+        }
     }
 }
 
