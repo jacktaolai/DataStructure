@@ -13,8 +13,8 @@
 class HuffmanCode {
 public:
     std::string _fileName;//文件名
-    unsigned int _avaiableMermory;//可用内存
-    unsigned int _fileSize=0;//文件大小
+    size_t _avaiableMermory;//可用内存
+    size_t _fileSize=0;//文件大小
     unsigned int _threadNum=16;//线程数
     std::mutex mtx;//互斥锁
     BinaryTree<unsigned char> huffmanTree;//根据文件创建的哈夫曼树
@@ -30,9 +30,11 @@ public:
     void charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence);
     void charFrequence(const std::string& charSet) { charFrequence(charSet, byteFrequence); }
     //通过WindowsAPI获取可用内存
-    void getMemory();
+    size_t getMemory();
+    //通过WindowsAPI获取线程数
+    int getCpuCoreCount();
     //获取文件大小
-    void getFilesize(std::string fileName);
+    size_t getFilesize(std::string fileName);
     //使用递归方式获取哈夫曼编码
     void getHuffmanCode();
     void getHuffmanCode(TreeNode<unsigned char>* root, std::string* huffmanCode, const std::string& codePath);
@@ -40,8 +42,9 @@ public:
 public:
     HuffmanCode() :byteFrequence(256, 0) { getMemory(); }
     HuffmanCode(const std::string& fileName) :_fileName(fileName), byteFrequence(256, 0) { 
-        getMemory(); 
-        getFilesize(_fileName);
+        _avaiableMermory=getMemory(); 
+        _threadNum = getCpuCoreCount();
+        _fileSize=getFilesize(_fileName);
     };
     //压缩函数
     void compress(const std::string& outputFileName);

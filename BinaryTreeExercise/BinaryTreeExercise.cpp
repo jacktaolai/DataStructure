@@ -35,12 +35,12 @@ int main()
 
 
     std::string filename = "test2.tif";
-    int numThreads = 16; // 线程数，可根据CPU核心数调整
+    //int numThreads = 16; // 线程数，可根据CPU核心数调整
     std::vector<char> charSet(11388960);
     std::vector<unsigned int> fre(256);
-
+    HuffmanCode huff("pakchunk11-Windows.pak");
     //HuffmanCode huff("PixPin_2024-10-30_03-27-26.png");
-    HuffmanCode huff("未来城正射影像-2.jpg");
+    //HuffmanCode huff("未来城正射影像-2.jpg");
     //HuffmanCode huff("test2.huf");
 
     //HuffmanCode huff("新建文件夹");
@@ -54,7 +54,7 @@ int main()
     //huff.charFrequence(charSet, fre);
     //huff.createHuffman(fre);
     //huff.getHuffmanCode();
-    huff._avaiableMermory = 10*1024*1024;
+    //huff._avaiableMermory = 10*1024*1024;
     std::cout << "可用内存"<<huff._avaiableMermory / 1024 / 1024 / 1024 << std::endl;
     huff.compress("test2.huf");
     for (int i = 0; i < 256; ++i) {
