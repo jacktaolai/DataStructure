@@ -1,5 +1,7 @@
 //Huffman.cpp
 #include "Huffman.h"
+#include "qapplication.h"
+#include "qprogressbar.h"
 
 void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
     //按频率从小到大创建优先队列，将节点存入队列，节点包含unsigned char和其对应的频率
@@ -110,14 +112,14 @@ void HuffmanCode::getHuffmanCode(TreeNode<unsigned char>* root,std::string* huff
         getHuffmanCode(root->rightChild, huffmanCode,codePath + '1');
     }
 
-void HuffmanCode::compress(const std::string& outputFileName) {
+void HuffmanCode::compress(const std::string& outputFileName,QProgressBar* progress) {
+
+
     //读取文件
     std::ifstream inputFile(_fileName, std::ios::binary);
     if (!inputFile) {
         throw std::runtime_error("Failed to open the file!");
     }
-
-
     //统计字符频率
     parallelCharFrequency();
     //创建哈夫曼树
@@ -143,7 +145,6 @@ void HuffmanCode::compress(const std::string& outputFileName) {
 
 
     // 提取文件名并赋值
-
     outputFile << '\n';
     //输出频率信息
     for (unsigned int fre : byteFrequence) {
@@ -154,7 +155,8 @@ void HuffmanCode::compress(const std::string& outputFileName) {
         outputFile << static_cast<char>(fre);
     }
     outputFile << '\n';
-
+    int steps;//进度条
+    progress->setValue(10);
     //该函数空间复杂度为2n，故文件大小与二分之一可用空间比
     size_t length = _fileSize < (_avaiableMermory / 2) ? _fileSize : (_avaiableMermory / 2);
     int times = (_fileSize + length - 1) / length;
@@ -168,6 +170,7 @@ void HuffmanCode::compress(const std::string& outputFileName) {
         std::string charSet(length, 0);//存放在内存里的文件
         inputFile.read(&charSet[0], length);
         //将字符转为哈夫曼编码
+        size_t count=0;
         for (char c : charSet) {
             encodedData += huffmanCode[static_cast<unsigned char>(c)];
             for (char bit : encodedData) {
@@ -179,12 +182,17 @@ void HuffmanCode::compress(const std::string& outputFileName) {
                     bitCount = 0;
                 }
             }
+            count++;
+            steps=steps+(count*times)/((length/100)+1);
+            progress->setValue(steps);
             //将string的内存置空而且把位置空出来
             encodedData.clear();
         }
         //写入压缩后的字节到文件
         outputFile.write(outputBytes.c_str(), outputBytes.size());
         outputBytes.clear();
+        steps=i/times*90;
+        progress->setValue(steps);
     }
     //最后结束如果不满8位的话
     if (bitCount > 0) {
@@ -194,20 +202,21 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     //写入压缩后的字节到文件
     outputFile.write(reinterpret_cast<const char*>(outputBytes.data()), outputBytes.size());
     outputFile.close();
+    progress->setValue(100);
     inputFile.close();
 }
 
-void HuffmanCode::decompress(const std::string& inputFileName){
-    std::ifstream inputFile(inputFileName,std::ios::binary);
+void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progress){
+    std::ifstream inputFile(_fileName,std::ios::binary);
     if (!inputFile) {
         throw std::runtime_error("Filed to create output file! ");
     }
     //读取文件名
-    _fileName="";
+    std::string outFileName;
     char ch;
     while (inputFile.get(ch)) {
         if (ch == '\n')  break;
-        _fileName.push_back(ch);
+        outFileName.push_back(ch);
     }
     //读取字符频率(unsigned int使用的小端序）
     //char fresInfo[4 * 256];//获取文件头的所有字符的频率信息
@@ -231,16 +240,18 @@ void HuffmanCode::decompress(const std::string& inputFileName){
         byteFrequence[i] = fre;
     }
     inputFile.get(ch);//往后读一位
-    if (ch != '\n') { throw std::runtime_error("File is broken!"); }
+    if (ch != '\n') { throw std::runtime_error("File is broken or not a huffman file!"); }
     //重建哈夫曼树
     createHuffman(byteFrequence);
+    std::string ouputfileName=outputPath+outFileName;
     //创建输出文件
-    std::ofstream outputFile(_fileName, std::ios::binary);
+    std::ofstream outputFile(ouputfileName, std::ios::binary);
     if (!outputFile) {
         throw std::runtime_error("Failed to create output file!");
     }
     std::streampos currentPos = inputFile.tellg();
-
+    int steps;//进度条
+    progress->setValue(10);
     //计算真正的压缩内容有多大（除头说明内容）
     inputFile.seekg(0,std::ios::end);
     size_t compressedFileSize = static_cast<unsigned int>(inputFile.tellg() - currentPos);
@@ -259,7 +270,7 @@ void HuffmanCode::decompress(const std::string& inputFileName){
         std::string compressedData(length, 0);
         inputFile.read(&compressedData[0], length);
 
-
+        size_t count=0;
         for (char byte : compressedData) {
             //每字节从高位到低位解码
             for (int i = 7; i >= 0; --i) {
@@ -275,6 +286,9 @@ void HuffmanCode::decompress(const std::string& inputFileName){
         //将当前块写入
         outputFile.write(decompressedData.c_str(), decompressedData.size());
         decompressedData.clear();
+        count++;
+        steps=steps+(count*times)/((length/100)+1);
+        progress->setValue(steps);
     }
 
     outputFile.write(decompressedData.c_str(), decompressedData.size());

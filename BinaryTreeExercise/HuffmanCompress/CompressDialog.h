@@ -10,6 +10,7 @@
 #include <QSpinBox>
 #include <QProgressBar>
 #include <QFileDialog>
+#include <QMessageBox>
 #include "Huffman.h"
 class CompressDialog : public QDialog {
     Q_OBJECT
@@ -96,12 +97,13 @@ private slots:
         int threadCount=threadSpinBox->value();
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
         huff.setThreadNum(static_cast<int>(threadCount));
-        huff.compress(outputEdit->text().toStdString());
+        try {
+            huff.compress(outputEdit->text().toStdString(),progressBar);
+        } catch (const std::exception& e) {
+        // 捕获异常并显示错误消息
+        QMessageBox::critical(nullptr, "错误", QString("压缩失败：%1").arg(e.what()));
+    }
 
-        for (int i = 0; i <= 100; i += 10) {
-            QThread::sleep(0);
-            progressBar->setValue(i);
-        }
         accept();
     }
 

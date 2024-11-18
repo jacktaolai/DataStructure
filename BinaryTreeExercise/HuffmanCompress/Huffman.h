@@ -8,7 +8,7 @@
 #include <mutex>
 #include "BinaryTree.h"
 #include "PriorityQueue.h"
-
+#include <QProgressDialog>
 class HuffmanCode {
 public:
     std::string _fileName;//文件名
@@ -42,9 +42,9 @@ public:
         _fileSize=getFilesize(_fileName);
     };
     //压缩函数
-    void compress(const std::string& outputFileName);
+    void compress(const std::string& outputFileName,QProgressBar* progress);
     //解压函数
-    void decompress(const std::string& inputFileName);
+    void decompress(const std::string& outputPath,QProgressBar* progress);
     //多线程统计字符频率
     void parallelCharFrequency();
     //通过WindowsAPI获取线程数

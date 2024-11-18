@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QThread>
 #include "Huffman.h"
 class DecompressDialog : public QDialog {
@@ -87,12 +88,13 @@ private slots:
     void startDecompression() {
         int memoryValue = memorySlider->value();
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
-        huff.decompress(outputEdit->text().toStdString());
+        try {
+            huff.decompress(outputEdit->text().toStdString(),progressBar);
+        }catch (const std::exception& e) {
+        // 捕获异常并显示错误消息
+        QMessageBox::critical(nullptr, "错误", QString("解压缩失败：%1").arg(e.what()));
+    }
         qDebug("解压缩开始");
-        for (int i = 0; i <= 100; i += 10) {
-            QThread::msleep(0); // Simulate time-consuming work
-            progressBar->setValue(i);
-        }
         accept();
     }
 
