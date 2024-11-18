@@ -33,7 +33,7 @@ private:
 	//实现前序访问,使用函数指针完成visit操作
 	void preVisit(TreeNode<T>* root, void(*visit)(TreeNode<T>* node));
 	//使用后序遍历删除整棵树
-	void destory(TreeNode<T>* root);
+    void destory(TreeNode<T>* root );
 	//从前序和中序创建
 	TreeNode<char>* contructTree(const std::string& preorder, const std::string& inorder,
 		int preStart,int preEnd,int inStar,int inEnd);

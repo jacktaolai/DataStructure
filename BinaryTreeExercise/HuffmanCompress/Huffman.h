@@ -8,7 +8,6 @@
 #include <mutex>
 #include "BinaryTree.h"
 #include "PriorityQueue.h"
-#include <filesystem>
 
 class HuffmanCode {
 public:
@@ -29,10 +28,6 @@ public:
     void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence);
     void charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence);
     void charFrequence(const std::string& charSet) { charFrequence(charSet, byteFrequence); }
-    //通过WindowsAPI获取可用内存
-    size_t getMemory();
-    //通过WindowsAPI获取线程数
-    int getCpuCoreCount();
     //获取文件大小
     size_t getFilesize(std::string fileName);
     //使用递归方式获取哈夫曼编码
@@ -52,8 +47,13 @@ public:
     void decompress(const std::string& inputFileName);
     //多线程统计字符频率
     void parallelCharFrequency();
+    //通过WindowsAPI获取线程数
+    int getCpuCoreCount();
+    //通过WindowsAPI获取可用内存
+    size_t getMemory();
+    //设置可用内存
+    void setMemory(size_t size){_avaiableMermory=size;}
+    //设置可用线程
+    void setThreadNum(int num){_threadNum=num;}
 };
-
-
-
 

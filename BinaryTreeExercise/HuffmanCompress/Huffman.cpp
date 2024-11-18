@@ -1,7 +1,6 @@
 //Huffman.cpp
 #include "Huffman.h"
-#include <filesystem>
-#include <filesystem>
+
 void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
     //按频率从小到大创建优先队列，将节点存入队列，节点包含unsigned char和其对应的频率
     PriorityLinkQueue<TreeNode<unsigned char>*> forestRoot;
@@ -26,76 +25,47 @@ void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
 
 
 
-
-//void HuffmanCode::readFile(const std::string& fileName, std::vector<char>& charSet, int size) {
-//    std::ifstream file;
-//    file.open(fileName, std::ios::binary);
-//    if (!file.is_open()) throw std::runtime_error("Failed to open the file!");
-//    file.read(charSet.data(), size);
-//    //获取实际读取的字节数
-//    std::streamsize bytesRead = file.gcount();
-//    // 打印读取的字节数
-//    std::cout << "实际读取的字节数: " << bytesRead << std::endl;
-//    file.close();
-//}
+void HuffmanCode::readFile(const std::string& fileName, std::vector<char>& charSet, int size) {
+    std::ifstream file;
+    file.open(fileName, std::ios::binary);
+    if (!file.is_open()) throw std::runtime_error("Failed to open the file!");
+    file.read(charSet.data(), size);
+    //获取实际读取的字节数
+    std::streamsize bytesRead = file.gcount();
+    // 打印读取的字节数
+    std::cout << "实际读取的字节数: " << bytesRead << std::endl;
+    file.close();
+}
 void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence) {
     for (unsigned char byte : charSet) {
         frequence[byte]++;
     }
 }
 void HuffmanCode::charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence) {
-    //局部字符频率表
+    // 局部字符频率表
     std::vector<unsigned int> localFre(256, 0);
 
-    //每个线程打开自己的文件流
+    // 每个线程打开自己的文件流
     std::ifstream inputFile(_fileName, std::ios::binary);
     inputFile.seekg(start);
 
-    //读取指定范围的内容
+    // 读取指定范围的内容
     unsigned int readLength = end - start;
     std::string partContent(readLength,0);
     inputFile.read(&partContent[0], readLength);
 
-    //统计当前线程的频率
+    // 统计当前线程的频率
     for (char ch : partContent) {
         localFre[static_cast<unsigned char>(ch)]++;
     }
 
-    //锁定合并频率表
+    // 锁定合并频率表
     for (int i = 0; i < 256; ++i) {
         mtx.lock();
         frequence[i] += localFre[i];
         mtx.unlock();
     }
 }
-
-void HuffmanCode::parallelCharFrequency() {
-
-    //如果文件比可用内存小就以文件大小为最大配置内存
-    size_t length = _fileSize < _avaiableMermory ? _fileSize : _avaiableMermory;
-    int times = (_fileSize + length - 1) / length;//循环读取次数等于文件大小除每次读取向上取整、
-    for (int i = 1; i <= times; ++i) {
-        //最后一次length可能小于原来length
-        length = (i == times) ? (_fileSize - (times - 1) * length) : length;
-        //计算每个线程应该读取的长度
-        unsigned int threadLength = length / _threadNum;
-        std::vector<std::thread> threads;
-        unsigned int globalOffset = (i - 1) * length;//当前批次的起始位置对于整个文件的偏移量
-        for (int j = 0; j < _threadNum; ++j) {
-            unsigned int start = globalOffset + j * threadLength;
-            unsigned int end = (j == _threadNum - 1) ? (globalOffset + length) : (globalOffset + (j + 1) * threadLength);
-            //因为在类内，所以使用匿名函数构建线程
-            threads.emplace_back([this, start, end]() {
-                charFrequence(start, end, byteFrequence);
-                });
-        }
-        //等待所有线程完成
-        for (auto& thread : threads) {
-            thread.join();
-        }
-    }
-}
-
 
 size_t HuffmanCode::getMemory(){
     MEMORYSTATUSEX statex;
@@ -159,9 +129,22 @@ void HuffmanCode::compress(const std::string& outputFileName) {
     if (!outputFile) {
         throw std::runtime_error("Filed to create output file: ");
     }
-    std::filesystem::path filePath = _fileName;
+    //将文件路径中的文件名提取出来
+    std::string filename;
+    //找到最后一个路径分隔符的位置
+    size_t pos = _fileName.find_last_of('/');
+    if (pos != std::string::npos) {
+        filename = _fileName.substr(pos + 1); //从最后一个'/'后开始提取
+    } else {
+        filename = _fileName; //如果没有'/'，路径本身就是文件名
+    }
     //第一行对应文件名
-    outputFile << filePath.filename().string()<<'\n';
+    outputFile << filename;
+
+
+    // 提取文件名并赋值
+
+    outputFile << '\n';
     //输出频率信息
     for (unsigned int fre : byteFrequence) {
         //将一个int用四个char表示
@@ -216,10 +199,11 @@ void HuffmanCode::compress(const std::string& outputFileName) {
 
 void HuffmanCode::decompress(const std::string& inputFileName){
     std::ifstream inputFile(inputFileName,std::ios::binary);
-    if (!inputFile) { 
-        throw std::runtime_error("Filed to create output file! "); 
+    if (!inputFile) {
+        throw std::runtime_error("Filed to create output file! ");
     }
     //读取文件名
+    _fileName="";
     char ch;
     while (inputFile.get(ch)) {
         if (ch == '\n')  break;
@@ -299,3 +283,34 @@ void HuffmanCode::decompress(const std::string& inputFileName){
 
 
 }
+
+void HuffmanCode::parallelCharFrequency() {
+
+    //如果文件比可用内存小就以文件大小为最大配置内存
+    size_t length = _fileSize < _avaiableMermory ? _fileSize : _avaiableMermory;
+    int times = (_fileSize+length-1) / length;//循环读取次数等于文件大小除每次读取向上取整、
+    for (int i = 1; i <= times; ++i) {
+        //最后一次length可能小于原来length
+        length = (i == times) ? (_fileSize - (times - 1) * length) : length;
+        //计算每个线程应该读取的长度
+        unsigned int threadLength = length / _threadNum;
+        std::vector<std::thread> threads;
+        unsigned int globalOffset = (i-1) * length;//当前批次的起始位置对于整个文件的偏移量
+        for (int j = 0; j < _threadNum; ++j) {
+            unsigned int start = globalOffset + j * threadLength;
+            unsigned int end = (j == _threadNum - 1) ? (globalOffset + length) : (globalOffset + (j + 1) * threadLength);
+            //因为在类内，所以使用匿名函数构建线程
+            threads.emplace_back([this, start, end]() {
+                charFrequence(start, end, byteFrequence);
+                });
+        }
+        //等待所有线程完成
+        for (auto& thread : threads) {
+            thread.join();
+        }
+    }
+}
+
+
+
+

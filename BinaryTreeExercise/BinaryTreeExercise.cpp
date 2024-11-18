@@ -38,13 +38,13 @@ int main()
     //int numThreads = 16; // 线程数，可根据CPU核心数调整
     std::vector<char> charSet(11388960);
     std::vector<unsigned int> fre(256);
-    HuffmanCode huff("pakchunk11-Windows.pak");
+    //HuffmanCode huff("pakchunk11-Windows.pak");
     //HuffmanCode huff("PixPin_2024-10-30_03-27-26.png");
-    //HuffmanCode huff("未来城正射影像-2.jpg");
+    HuffmanCode huff("D:\\代码文件\\CPP\\DataStructure\\BinaryTreeExercise\\未来城正射影像-2.jpg");
     //HuffmanCode huff("test2.huf");
 
     //HuffmanCode huff("新建文件夹");
-    //HuffmanCode huff("编码解码-英文测试数据.txt");
+    //HuffmanCode huff("D:/Calculator.h");
     //HuffmanCode huff("新建 文本文档.txt");
 
     //HuffmanCode huff("tif2002Raw_re.tif");
@@ -56,7 +56,7 @@ int main()
     //huff.getHuffmanCode();
     //huff._avaiableMermory = 10*1024*1024;
     std::cout << "可用内存"<<huff._avaiableMermory / 1024 / 1024 / 1024 << std::endl;
-    huff.compress("test2.huf");
+    //huff.compress("D:\\代码文件\\CPP\\DataStructure\\BinaryTreeExercise\\未来城正射影像-2.huf");
     for (int i = 0; i < 256; ++i) {
 
         std::cout << "huffmanCode[" << i << "] = " << huff.huffmanCode[i] << '\n';
@@ -68,7 +68,7 @@ int main()
     //std::unordered_map<char, int> freqMap;
     //countFrequencyInChunk(filename, freqMap);
     //printFrequencyMap(freqMap);
-    huff.decompress("test2.huf");
+    huff.decompress("D:/image.huf");
      // 循环输出每个非空编码
     for (int i = 0; i < 256; ++i) {
   
