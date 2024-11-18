@@ -16,7 +16,8 @@ class CompressDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit CompressDialog(const QString &inputFilePath, QWidget *parent = nullptr) : QDialog(parent), huff(inputFilePath.toStdString()) {
+    explicit CompressDialog(const QString &inputFilePath, QWidget *parent = nullptr) : QDialog(parent)
+        , huff(inputFilePath.toLocal8Bit().constData()) {
         setWindowTitle("压缩设置");
         auto *layout = new QVBoxLayout(this);
 
@@ -98,7 +99,8 @@ private slots:
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
         huff.setThreadNum(static_cast<int>(threadCount));
         try {
-            huff.compress(outputEdit->text().toStdString(),progressBar);
+            std::string filepath=outputEdit->text().toLocal8Bit().constData();
+            huff.compress(filepath,progressBar);
         } catch (const std::exception& e) {
         // 捕获异常并显示错误消息
         QMessageBox::critical(nullptr, "错误", QString("压缩失败：%1").arg(e.what()));

@@ -212,7 +212,7 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
         throw std::runtime_error("Filed to create output file! ");
     }
     //读取文件名
-    std::string outFileName;
+    std::string outFileName="";
     char ch;
     while (inputFile.get(ch)) {
         if (ch == '\n')  break;

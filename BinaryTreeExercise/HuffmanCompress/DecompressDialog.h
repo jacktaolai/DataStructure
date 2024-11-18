@@ -17,7 +17,7 @@ class DecompressDialog : public QDialog {
 
 public:
     explicit DecompressDialog(const QString &inputFilePath, QWidget *parent = nullptr)
-        : QDialog(parent),huff(inputFilePath.toStdString()) {
+        : QDialog(parent),huff(inputFilePath.toLocal8Bit().constData()) {
         setWindowTitle("解压设置");
 
         auto *layout = new QVBoxLayout(this);
@@ -89,12 +89,12 @@ private slots:
         int memoryValue = memorySlider->value();
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
         try {
-            huff.decompress(outputEdit->text().toStdString(),progressBar);
+            huff.decompress(outputEdit->text().toLocal8Bit().constData(),progressBar);
         }catch (const std::exception& e) {
         // 捕获异常并显示错误消息
         QMessageBox::critical(nullptr, "错误", QString("解压缩失败：%1").arg(e.what()));
     }
-        qDebug("解压缩开始");
+
         accept();
     }
 
