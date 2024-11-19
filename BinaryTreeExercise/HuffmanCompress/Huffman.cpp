@@ -213,6 +213,7 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
     }
     //读取文件名
     std::string outFileName="";
+
     char ch;
     while (inputFile.get(ch)) {
         if (ch == '\n')  break;

@@ -34,13 +34,13 @@ int main()
     std::cout <<pre<<std::endl<< "Hello World!\n";
 
 
-    std::string filename = "test2.tif";
+    std::string filename = "test2.huf";
     //int numThreads = 16; // 线程数，可根据CPU核心数调整
     std::vector<char> charSet(11388960);
     std::vector<unsigned int> fre(256);
     //HuffmanCode huff("pakchunk11-Windows.pak");
     //HuffmanCode huff("PixPin_2024-10-30_03-27-26.png");
-    HuffmanCode huff("D:\\代码文件\\CPP\\DataStructure\\BinaryTreeExercise\\未来城正射影像-2.jpg");
+    //HuffmanCode huff("未来城正射影像-2.jpg");
     //HuffmanCode huff("test2.huf");
 
     //HuffmanCode huff("新建文件夹");
@@ -48,7 +48,7 @@ int main()
     //HuffmanCode huff("新建 文本文档.txt");
 
     //HuffmanCode huff("tif2002Raw_re.tif");
-    //HuffmanCode huff("2020年全国_GLC30_30米土地覆盖数据.tif");
+    HuffmanCode huff("2020年全国_GLC30_30米土地覆盖数据.tif");
     //huff.multithreading();
     //huff.readFile("编码解码-英文测试数据.txt", charSet, 1138860 );
     //huff.charFrequence(charSet, fre);
@@ -56,7 +56,7 @@ int main()
     //huff.getHuffmanCode();
     //huff._avaiableMermory = 10*1024*1024;
     std::cout << "可用内存"<<huff._avaiableMermory / 1024 / 1024 / 1024 << std::endl;
-    //huff.compress("D:\\代码文件\\CPP\\DataStructure\\BinaryTreeExercise\\未来城正射影像-2.huf");
+    huff.compress(filename);
     for (int i = 0; i < 256; ++i) {
 
         std::cout << "huffmanCode[" << i << "] = " << huff.huffmanCode[i] << '\n';
@@ -68,7 +68,7 @@ int main()
     //std::unordered_map<char, int> freqMap;
     //countFrequencyInChunk(filename, freqMap);
     //printFrequencyMap(freqMap);
-    huff.decompress("D:/image.huf");
+    //huff.decompress("test2.huf");
      // 循环输出每个非空编码
     for (int i = 0; i < 256; ++i) {
   
