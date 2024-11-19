@@ -11,26 +11,26 @@
 #include <QProgressDialog>
 class HuffmanCode {
 public:
-    std::string _fileName;//ÎÄ¼şÃû
-    size_t _avaiableMermory;//¿ÉÓÃÄÚ´æ
-    size_t _fileSize=0;//ÎÄ¼ş´óĞ¡
-    unsigned int _threadNum=16;//Ïß³ÌÊı
-    std::mutex mtx;//»¥³âËø
-    BinaryTree<unsigned char> huffmanTree;//¸ù¾İÎÄ¼ş´´½¨µÄ¹ş·òÂüÊ÷
-    //std::string preorder;//´¢´æ¹ş·òÂüÊ÷Ç°Ğò±éÀú£¬¿Õº¢×ÓÓÃ#±íÊ¾£¬·½±ãÖØĞÂ¹¹½¨Ê÷
-    std::vector<unsigned int> byteFrequence;//´¢´æÃ¿ÖÖ×Ö½Ú³öÏÖÆµÂÊ
-    std::string huffmanCode[256];//´æ´¢Ã¿Ò»Î»BYTE¶ÔÓ¦µÄ±àÂë£¬Ò²¿ÉÓÃstd::unorder_mapÊµÏÖ
-    //¸ù¾İÆµÂÊ´´½¨¶ş²æÊ÷
+    std::string _fileName;//æ–‡ä»¶å
+    size_t _avaiableMermory;//å¯ç”¨å†…å­˜
+    size_t _fileSize=0;//æ–‡ä»¶å¤§å°
+    unsigned int _threadNum=16;//çº¿ç¨‹æ•°
+    std::mutex mtx;//äº’æ–¥é”
+    BinaryTree<unsigned char> huffmanTree;//æ ¹æ®æ–‡ä»¶åˆ›å»ºçš„å“ˆå¤«æ›¼æ ‘
+    //std::string preorder;//å‚¨å­˜å“ˆå¤«æ›¼æ ‘å‰åºéå†ï¼Œç©ºå­©å­ç”¨#è¡¨ç¤ºï¼Œæ–¹ä¾¿é‡æ–°æ„å»ºæ ‘
+    std::vector<unsigned int> byteFrequence;//å‚¨å­˜æ¯ç§å­—èŠ‚å‡ºç°é¢‘ç‡
+    std::string huffmanCode[256];//å­˜å‚¨æ¯ä¸€ä½BYTEå¯¹åº”çš„ç¼–ç ï¼Œä¹Ÿå¯ç”¨std::unorder_mapå®ç°
+    //æ ¹æ®é¢‘ç‡åˆ›å»ºäºŒå‰æ ‘
     void createHuffman(const std::vector<unsigned int>& frequence);
-    //´ÓÎÄ¼şÀï¶ÁÈ¡size´óĞ¡×Ö½Úµ½ÄÚ´æÖĞ
+    //ä»æ–‡ä»¶é‡Œè¯»å–sizeå¤§å°å­—èŠ‚åˆ°å†…å­˜ä¸­
     void readFile(const std::string& fileName, std::vector<char>& charSet, int size);
-    //Í³¼Æ×Ö·û¼¯Àï¸÷BYTE[0-255]³öÏÖµÄ´ÎÊı£¬vectorµÄµÚnÎ»¾Í´ú±íµÚBYTEÖµÎªn
+    //ç»Ÿè®¡å­—ç¬¦é›†é‡Œå„BYTE[0-255]å‡ºç°çš„æ¬¡æ•°ï¼Œvectorçš„ç¬¬nä½å°±ä»£è¡¨ç¬¬BYTEå€¼ä¸ºn
     void charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence);
     void charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence);
     void charFrequence(const std::string& charSet) { charFrequence(charSet, byteFrequence); }
-    //»ñÈ¡ÎÄ¼ş´óĞ¡
+    //è·å–æ–‡ä»¶å¤§å°
     size_t getFilesize(std::string fileName);
-    //Ê¹ÓÃµİ¹é·½Ê½»ñÈ¡¹ş·òÂü±àÂë
+    //ä½¿ç”¨é€’å½’æ–¹å¼è·å–å“ˆå¤«æ›¼ç¼–ç 
     void getHuffmanCode();
     void getHuffmanCode(TreeNode<unsigned char>* root, std::string* huffmanCode, const std::string& codePath);
 
@@ -41,19 +41,19 @@ public:
         _threadNum = getCpuCoreCount();
         _fileSize=getFilesize(_fileName);
     };
-    //Ñ¹Ëõº¯Êı
+    //å‹ç¼©å‡½æ•°
     void compress(const std::string& outputFileName,QProgressBar* progress);
-    //½âÑ¹º¯Êı
+    //è§£å‹å‡½æ•°
     void decompress(const std::string& outputPath,QProgressBar* progress);
-    //¶àÏß³ÌÍ³¼Æ×Ö·ûÆµÂÊ
+    //å¤šçº¿ç¨‹ç»Ÿè®¡å­—ç¬¦é¢‘ç‡
     void parallelCharFrequency();
-    //Í¨¹ıWindowsAPI»ñÈ¡Ïß³ÌÊı
+    //é€šè¿‡WindowsAPIè·å–çº¿ç¨‹æ•°
     int getCpuCoreCount();
-    //Í¨¹ıWindowsAPI»ñÈ¡¿ÉÓÃÄÚ´æ
+    //é€šè¿‡WindowsAPIè·å–å¯ç”¨å†…å­˜
     size_t getMemory();
-    //ÉèÖÃ¿ÉÓÃÄÚ´æ
+    //è®¾ç½®å¯ç”¨å†…å­˜
     void setMemory(size_t size){_avaiableMermory=size;}
-    //ÉèÖÃ¿ÉÓÃÏß³Ì
+    //è®¾ç½®å¯ç”¨çº¿ç¨‹
     void setThreadNum(int num){_threadNum=num;}
 };
 

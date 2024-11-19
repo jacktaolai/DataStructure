@@ -4,17 +4,17 @@
 #include "qprogressbar.h"
 
 void HuffmanCode::createHuffman(const std::vector<unsigned int>& frequence) {
-    //°´ÆµÂÊ´ÓĞ¡µ½´ó´´½¨ÓÅÏÈ¶ÓÁĞ£¬½«½Úµã´æÈë¶ÓÁĞ£¬½Úµã°üº¬unsigned charºÍÆä¶ÔÓ¦µÄÆµÂÊ
+    //æŒ‰é¢‘ç‡ä»å°åˆ°å¤§åˆ›å»ºä¼˜å…ˆé˜Ÿåˆ—ï¼Œå°†èŠ‚ç‚¹å­˜å…¥é˜Ÿåˆ—ï¼ŒèŠ‚ç‚¹åŒ…å«unsigned charå’Œå…¶å¯¹åº”çš„é¢‘ç‡
     PriorityLinkQueue<TreeNode<unsigned char>*> forestRoot;
     for (int i = 0; i < 256; ++i) {
         forestRoot.enqueue(new TreeNode<unsigned char>(i, frequence[i]), frequence[i]);
     }
     while (forestRoot.getSize() > 1) {
-        //´ÓÉ­ÁÖÀïÈ¡Á©×îĞ¡µÄÈ¨Öµ
+        //ä»æ£®æ—é‡Œå–ä¿©æœ€å°çš„æƒå€¼
         TreeNode<unsigned char>* leftChild = forestRoot.dequeue();
         TreeNode<unsigned char>* rightChild = forestRoot.dequeue();
-        //ÒÔÁ½¸öº¢×ÓµÄÈ¨Öµ×÷ÎªÈ¨Öµ
-        //´Ë´¦µÄ·ÇÒ¶×Ó½ÚµãÍ³Ò»Êı¾İ´æ0£¬ÒÔºóÍ¨¹ıÅĞ¶ÏÓĞÎŞ×óÓÒº¢×ÓÅĞ¶ÏÊÇ·ñ×Ó½Úµã
+        //ä»¥ä¸¤ä¸ªå­©å­çš„æƒå€¼ä½œä¸ºæƒå€¼
+        //æ­¤å¤„çš„éå¶å­èŠ‚ç‚¹ç»Ÿä¸€æ•°æ®å­˜0ï¼Œä»¥åé€šè¿‡åˆ¤æ–­æœ‰æ— å·¦å³å­©å­åˆ¤æ–­æ˜¯å¦å­èŠ‚ç‚¹
         TreeNode<unsigned char>* newNode = new TreeNode<unsigned char>(0, leftChild->priority + rightChild->priority);
         newNode->leftChild = leftChild;
         newNode->rightChild = rightChild;
@@ -32,10 +32,10 @@ void HuffmanCode::readFile(const std::string& fileName, std::vector<char>& charS
     file.open(fileName, std::ios::binary);
     if (!file.is_open()) throw std::runtime_error("Failed to open the file!");
     file.read(charSet.data(), size);
-    //»ñÈ¡Êµ¼Ê¶ÁÈ¡µÄ×Ö½ÚÊı
+    //è·å–å®é™…è¯»å–çš„å­—èŠ‚æ•°
     std::streamsize bytesRead = file.gcount();
-    // ´òÓ¡¶ÁÈ¡µÄ×Ö½ÚÊı
-    std::cout << "Êµ¼Ê¶ÁÈ¡µÄ×Ö½ÚÊı: " << bytesRead << std::endl;
+    // æ‰“å°è¯»å–çš„å­—èŠ‚æ•°
+    std::cout << "å®é™…è¯»å–çš„å­—èŠ‚æ•°: " << bytesRead << std::endl;
     file.close();
 }
 void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned int>& frequence) {
@@ -44,24 +44,24 @@ void HuffmanCode::charFrequence(const std::string& charSet, std::vector<unsigned
     }
 }
 void HuffmanCode::charFrequence(unsigned int start, unsigned int end, std::vector<unsigned int>& frequence) {
-    // ¾Ö²¿×Ö·ûÆµÂÊ±í
+    // å±€éƒ¨å­—ç¬¦é¢‘ç‡è¡¨
     std::vector<unsigned int> localFre(256, 0);
 
-    // Ã¿¸öÏß³Ì´ò¿ª×Ô¼ºµÄÎÄ¼şÁ÷
+    // æ¯ä¸ªçº¿ç¨‹æ‰“å¼€è‡ªå·±çš„æ–‡ä»¶æµ
     std::ifstream inputFile(_fileName, std::ios::binary);
     inputFile.seekg(start);
 
-    // ¶ÁÈ¡Ö¸¶¨·¶Î§µÄÄÚÈİ
+    // è¯»å–æŒ‡å®šèŒƒå›´çš„å†…å®¹
     unsigned int readLength = end - start;
     std::string partContent(readLength,0);
     inputFile.read(&partContent[0], readLength);
 
-    // Í³¼Æµ±Ç°Ïß³ÌµÄÆµÂÊ
+    // ç»Ÿè®¡å½“å‰çº¿ç¨‹çš„é¢‘ç‡
     for (char ch : partContent) {
         localFre[static_cast<unsigned char>(ch)]++;
     }
 
-    // Ëø¶¨ºÏ²¢ÆµÂÊ±í
+    // é”å®šåˆå¹¶é¢‘ç‡è¡¨
     for (int i = 0; i < 256; ++i) {
         mtx.lock();
         frequence[i] += localFre[i];
@@ -83,10 +83,10 @@ int HuffmanCode::getCpuCoreCount() {
 }
 
 size_t HuffmanCode::getFilesize(std::string fileName){
-    std::ifstream file(fileName, std::ios::binary | std::ios::ate);//´ò¿ªÎÄ¼ş²¢ÒÆ¶¯µ½Ä©Î²
+    std::ifstream file(fileName, std::ios::binary | std::ios::ate);//æ‰“å¼€æ–‡ä»¶å¹¶ç§»åŠ¨åˆ°æœ«å°¾
     size_t fileSize;
     if (file.is_open()) {
-        fileSize = static_cast<unsigned int>(file.tellg());//»ñÈ¡ÎÄ¼ş´óĞ¡
+        fileSize = static_cast<unsigned int>(file.tellg());//è·å–æ–‡ä»¶å¤§å°
         file.close();
     }
     else {
@@ -97,66 +97,66 @@ size_t HuffmanCode::getFilesize(std::string fileName){
 
 void HuffmanCode::getHuffmanCode(){
     if (huffmanTree.getRoot() == nullptr) throw std::runtime_error("Tree is empty!");
-    std::string codePath = "";//×óÎª0ÓÒÎª1
+    std::string codePath = "";//å·¦ä¸º0å³ä¸º1
     getHuffmanCode(huffmanTree.getRoot(), huffmanCode,codePath );
 }
 void HuffmanCode::getHuffmanCode(TreeNode<unsigned char>* root,std::string* huffmanCode, const std::string& codePath) {
-        //Èç¹ûµ±Ç°½ÚµãÊÇÒ¶×Ó½Úµã£¬´æ´¢±àÂë
+        //å¦‚æœå½“å‰èŠ‚ç‚¹æ˜¯å¶å­èŠ‚ç‚¹ï¼Œå­˜å‚¨ç¼–ç 
         if (root->leftChild == nullptr && root->rightChild == nullptr) {
             huffmanCode[root->data] = codePath;
             return;
         }
-        //×ó×ÓÊ÷Ôò¼Ó '0'
+        //å·¦å­æ ‘åˆ™åŠ  '0'
         getHuffmanCode(root->leftChild, huffmanCode,codePath + '0' );
-        //ÓÒ×ÓÊ÷Ôò¼Ó '1'
+        //å³å­æ ‘åˆ™åŠ  '1'
         getHuffmanCode(root->rightChild, huffmanCode,codePath + '1');
     }
 
 void HuffmanCode::compress(const std::string& outputFileName,QProgressBar* progress) {
 
-    //¶ÁÈ¡ÎÄ¼ş
+    //è¯»å–æ–‡ä»¶
     std::ifstream inputFile(_fileName, std::ios::binary);
     if (!inputFile) {
         throw std::runtime_error("Failed to open the file!");
     }
-    //Í³¼Æ×Ö·ûÆµÂÊ
+    //ç»Ÿè®¡å­—ç¬¦é¢‘ç‡
     parallelCharFrequency();
-    //´´½¨¹ş·òÂüÊ÷
+    //åˆ›å»ºå“ˆå¤«æ›¼æ ‘
     createHuffman(byteFrequence);
-    //»ñÈ¡¹ş·òÂü±àÂë
+    //è·å–å“ˆå¤«æ›¼ç¼–ç 
     getHuffmanCode();
-    //´´½¨Êä³öÎÄ¼ş
+    //åˆ›å»ºè¾“å‡ºæ–‡ä»¶
     std::ofstream outputFile(outputFileName, std::ios::binary);
     if (!outputFile) {
         throw std::runtime_error("Filed to create output file: ");
     }
-    //½«ÎÄ¼şÂ·¾¶ÖĞµÄÎÄ¼şÃûÌáÈ¡³öÀ´
+    //å°†æ–‡ä»¶è·¯å¾„ä¸­çš„æ–‡ä»¶åæå–å‡ºæ¥
     std::string filename;
-    //ÕÒµ½×îºóÒ»¸öÂ·¾¶·Ö¸ô·ûµÄÎ»ÖÃ
+    //æ‰¾åˆ°æœ€åä¸€ä¸ªè·¯å¾„åˆ†éš”ç¬¦çš„ä½ç½®
     size_t pos = _fileName.find_last_of('/');
     if (pos != std::string::npos) {
-        filename = _fileName.substr(pos + 1); //´Ó×îºóÒ»¸ö'/'ºó¿ªÊ¼ÌáÈ¡
+        filename = _fileName.substr(pos + 1); //ä»æœ€åä¸€ä¸ª'/'åå¼€å§‹æå–
     } else {
-        filename = _fileName; //Èç¹ûÃ»ÓĞ'/'£¬Â·¾¶±¾Éí¾ÍÊÇÎÄ¼şÃû
+        filename = _fileName; //å¦‚æœæ²¡æœ‰'/'ï¼Œè·¯å¾„æœ¬èº«å°±æ˜¯æ–‡ä»¶å
     }
-    //µÚÒ»ĞĞ¶ÔÓ¦ÎÄ¼şÃû
+    //ç¬¬ä¸€è¡Œå¯¹åº”æ–‡ä»¶å
     outputFile << filename;
 
 
-    // ÌáÈ¡ÎÄ¼şÃû²¢¸³Öµ
+    // æå–æ–‡ä»¶åå¹¶èµ‹å€¼
     outputFile << '\n';
-    //Êä³öÆµÂÊĞÅÏ¢
+    //è¾“å‡ºé¢‘ç‡ä¿¡æ¯
     for (unsigned int fre : byteFrequence) {
-        //½«Ò»¸öintÓÃËÄ¸öchar±íÊ¾
+        //å°†ä¸€ä¸ªintç”¨å››ä¸ªcharè¡¨ç¤º
         outputFile << static_cast<char>(fre >> 24);
         outputFile << static_cast<char>(fre >> 16);
         outputFile << static_cast<char>(fre >> 8);
         outputFile << static_cast<char>(fre);
     }
     outputFile << '\n';
-    int steps;//½ø¶ÈÌõ
+    int steps;//è¿›åº¦æ¡
     progress->setValue(10);
-    //¸Ãº¯Êı¿Õ¼ä¸´ÔÓ¶ÈÎª2n£¬¹ÊÎÄ¼ş´óĞ¡Óë¶ş·ÖÖ®Ò»¿ÉÓÃ¿Õ¼ä±È
+    //è¯¥å‡½æ•°ç©ºé—´å¤æ‚åº¦ä¸º2nï¼Œæ•…æ–‡ä»¶å¤§å°ä¸äºŒåˆ†ä¹‹ä¸€å¯ç”¨ç©ºé—´æ¯”
     size_t length = _fileSize < (_avaiableMermory / 2) ? _fileSize : (_avaiableMermory / 2);
     int times = (_fileSize + length - 1) / length;
     std::string encodedData = "";
@@ -164,18 +164,18 @@ void HuffmanCode::compress(const std::string& outputFileName,QProgressBar* progr
     int bitCount = 0;
     unsigned char Byte = 0;
     for (int i = 1; i <= times; ++i) {
-        //È·±£×îºóÒ»´ÎÑ­»·µÄlengthÊÇ¶ÔµÄ
+        //ç¡®ä¿æœ€åä¸€æ¬¡å¾ªç¯çš„lengthæ˜¯å¯¹çš„
         length = (i == times) ? (_fileSize - (times - 1) * length) : length;
-        std::string charSet(length, 0);//´æ·ÅÔÚÄÚ´æÀïµÄÎÄ¼ş
+        std::string charSet(length, 0);//å­˜æ”¾åœ¨å†…å­˜é‡Œçš„æ–‡ä»¶
         inputFile.read(&charSet[0], length);
-        //½«×Ö·û×ªÎª¹ş·òÂü±àÂë
+        //å°†å­—ç¬¦è½¬ä¸ºå“ˆå¤«æ›¼ç¼–ç 
         size_t count=0;
         for (char c : charSet) {
             encodedData += huffmanCode[static_cast<unsigned char>(c)];
             for (char bit : encodedData) {
-                Byte = (bit == '1') ? (Byte << 1) | 1 : (Byte << 1) | 0;//ÊµÏÖ×Ö·ûµ½¶ş½øÖÆµÄ×ª»»
+                Byte = (bit == '1') ? (Byte << 1) | 1 : (Byte << 1) | 0;//å®ç°å­—ç¬¦åˆ°äºŒè¿›åˆ¶çš„è½¬æ¢
                 bitCount++;
-                if (bitCount == 8) {//Ã¿8Î»Éú³ÉÒ»¸ö×Ö½Ú
+                if (bitCount == 8) {//æ¯8ä½ç”Ÿæˆä¸€ä¸ªå­—èŠ‚
                     outputBytes.push_back(Byte);
                     Byte = 0;
                     bitCount = 0;
@@ -184,21 +184,21 @@ void HuffmanCode::compress(const std::string& outputFileName,QProgressBar* progr
             count++;
             steps=steps+(count*times)/((length/100)+1);
             progress->setValue(steps);
-            //½«stringµÄÄÚ´æÖÃ¿Õ¶øÇÒ°ÑÎ»ÖÃ¿Õ³öÀ´
+            //å°†stringçš„å†…å­˜ç½®ç©ºè€Œä¸”æŠŠä½ç½®ç©ºå‡ºæ¥
             encodedData.clear();
         }
-        //Ğ´ÈëÑ¹ËõºóµÄ×Ö½Úµ½ÎÄ¼ş
+        //å†™å…¥å‹ç¼©åçš„å­—èŠ‚åˆ°æ–‡ä»¶
         outputFile.write(outputBytes.c_str(), outputBytes.size());
         outputBytes.clear();
         steps=i/times*90;
         progress->setValue(steps);
     }
-    //×îºó½áÊøÈç¹û²»Âú8Î»µÄ»°
+    //æœ€åç»“æŸå¦‚æœä¸æ»¡8ä½çš„è¯
     if (bitCount > 0) {
         Byte = Byte << (8 - bitCount);
         outputBytes.push_back(Byte);
     }
-    //Ğ´ÈëÑ¹ËõºóµÄ×Ö½Úµ½ÎÄ¼ş
+    //å†™å…¥å‹ç¼©åçš„å­—èŠ‚åˆ°æ–‡ä»¶
     outputFile.write(reinterpret_cast<const char*>(outputBytes.data()), outputBytes.size());
     outputFile.close();
     progress->setValue(100);
@@ -210,7 +210,7 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
     if (!inputFile) {
         throw std::runtime_error("Filed to create output file! ");
     }
-    //¶ÁÈ¡ÎÄ¼şÃû
+    //è¯»å–æ–‡ä»¶å
     std::string outFileName="";
 
     char ch;
@@ -218,18 +218,18 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
         if (ch == '\n')  break;
         outFileName.push_back(ch);
     }
-    //¶ÁÈ¡×Ö·ûÆµÂÊ(unsigned intÊ¹ÓÃµÄĞ¡¶ËĞò£©
-    //char fresInfo[4 * 256];//»ñÈ¡ÎÄ¼şÍ·µÄËùÓĞ×Ö·ûµÄÆµÂÊĞÅÏ¢
+    //è¯»å–å­—ç¬¦é¢‘ç‡(unsigned intä½¿ç”¨çš„å°ç«¯åºï¼‰
+    //char fresInfo[4 * 256];//è·å–æ–‡ä»¶å¤´çš„æ‰€æœ‰å­—ç¬¦çš„é¢‘ç‡ä¿¡æ¯
     //inputFile.read(fresInfo, 4 * 256);
     //unsigned int* fres = reinterpret_cast<unsigned int*>(fresInfo);
     //for (int i = 0; i < 256; i++) {
     //    byteFrequence[i] = fres[i];
     //}
-    //Ê¹ÓÃÒÆÎ»ÊµÏÖ
+    //ä½¿ç”¨ç§»ä½å®ç°
     for (int i = 0; i < 256; ++i) {
         unsigned int fre = 0;
         inputFile.get(ch);
-        //Ç§ÍòĞ¡ĞÄÕâÀï²»Òª½«charÖ±½Ó×ªunsigned charÒÆÎ»£¬ÒòÎª¿ÉÄÜÊÇ¸ºÊı
+        //åƒä¸‡å°å¿ƒè¿™é‡Œä¸è¦å°†charç›´æ¥è½¬unsigned charç§»ä½ï¼Œå› ä¸ºå¯èƒ½æ˜¯è´Ÿæ•°
         fre = fre | ((static_cast<unsigned int>(static_cast<unsigned char>(ch))) << 24);
         inputFile.get(ch);
         fre = fre | ((static_cast<unsigned int>(static_cast<unsigned char>(ch))) << 16);
@@ -239,51 +239,52 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
         fre = fre | (static_cast<unsigned int>(static_cast<unsigned char>(ch)));
         byteFrequence[i] = fre;
     }
-    inputFile.get(ch);//Íùºó¶ÁÒ»Î»
+    inputFile.get(ch);//å¾€åè¯»ä¸€ä½
     if (ch != '\n') { throw std::runtime_error("File is broken or not a huffman file!"); }
-    //ÖØ½¨¹ş·òÂüÊ÷
+    //é‡å»ºå“ˆå¤«æ›¼æ ‘
     createHuffman(byteFrequence);
-    std::string ouputfileName=outputPath+outFileName;
-    //´´½¨Êä³öÎÄ¼ş
+    std::string ouputfileName=outputPath+"/"+outFileName;
+    qDebug() << QString::fromStdString(ouputfileName);
+    //åˆ›å»ºè¾“å‡ºæ–‡ä»¶
     std::ofstream outputFile(ouputfileName, std::ios::binary);
     if (!outputFile) {
         throw std::runtime_error("Failed to create output file!");
     }
     std::streampos currentPos = inputFile.tellg();
-    int steps;//½ø¶ÈÌõ
+    int steps;//è¿›åº¦æ¡
     progress->setValue(10);
-    //¼ÆËãÕæÕıµÄÑ¹ËõÄÚÈİÓĞ¶à´ó£¨³ıÍ·ËµÃ÷ÄÚÈİ£©
+    //è®¡ç®—çœŸæ­£çš„å‹ç¼©å†…å®¹æœ‰å¤šå¤§ï¼ˆé™¤å¤´è¯´æ˜å†…å®¹ï¼‰
     inputFile.seekg(0,std::ios::end);
     size_t compressedFileSize = static_cast<unsigned int>(inputFile.tellg() - currentPos);
     inputFile.seekg(currentPos);
-    //¸Ãº¯Êı¿Õ¼ä¸´ÔÓ¶ÈÎª2n£¬¹ÊÎÄ¼ş´óĞ¡Óë¶ş·ÖÖ®Ò»¿ÉÓÃÄÚ´æ±È
+    //è¯¥å‡½æ•°ç©ºé—´å¤æ‚åº¦ä¸º2nï¼Œæ•…æ–‡ä»¶å¤§å°ä¸äºŒåˆ†ä¹‹ä¸€å¯ç”¨å†…å­˜æ¯”
     unsigned length = compressedFileSize < (_avaiableMermory / 2) ? compressedFileSize : (_avaiableMermory / 2);
     int times = (compressedFileSize + length - 1) / length;
-    //½âÂëÑ¹ËõÄÚÈİ²¢½«½á¹û´æ´¢µ½ÄÚ´æ
+    //è§£ç å‹ç¼©å†…å®¹å¹¶å°†ç»“æœå­˜å‚¨åˆ°å†…å­˜
     std::string decompressedData;
-    TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();//¸ù¾İ±àÂëÓÎ×ßµ½µÄ½Úµã
+    TreeNode<unsigned char>* currentNode = huffmanTree.getRoot();//æ ¹æ®ç¼–ç æ¸¸èµ°åˆ°çš„èŠ‚ç‚¹
     for (int i = 1; i <= times; ++i) {
 
-        //È·±£×îºóÒ»´ÎÑ­»·µÄlengthÊÇ¶ÔµÄ
+        //ç¡®ä¿æœ€åä¸€æ¬¡å¾ªç¯çš„lengthæ˜¯å¯¹çš„
         length = (i == times) ? (compressedFileSize - (times - 1) * length) : length;
-        //¶ÁÈ¡Ñ¹ËõÄÚÈİµ½ÄÚ´æ
+        //è¯»å–å‹ç¼©å†…å®¹åˆ°å†…å­˜
         std::string compressedData(length, 0);
         inputFile.read(&compressedData[0], length);
 
         size_t count=0;
         for (char byte : compressedData) {
-            //Ã¿×Ö½Ú´Ó¸ßÎ»µ½µÍÎ»½âÂë
+            //æ¯å­—èŠ‚ä»é«˜ä½åˆ°ä½ä½è§£ç 
             for (int i = 7; i >= 0; --i) {
-                bool bit = (byte & (1 << i)) != 0;//È¡³ö×î¸ßÎ»
+                bool bit = (byte & (1 << i)) != 0;//å–å‡ºæœ€é«˜ä½
                 currentNode = bit ? currentNode->rightChild : currentNode->leftChild;
-                //Èç¹ûµ½´ïÒ¶×Ó½Úµã£¬Êä³ö×Ö·û²¢ÖØÖÃµ½¸ù½Úµã
+                //å¦‚æœåˆ°è¾¾å¶å­èŠ‚ç‚¹ï¼Œè¾“å‡ºå­—ç¬¦å¹¶é‡ç½®åˆ°æ ¹èŠ‚ç‚¹
                 if (currentNode->leftChild == nullptr && currentNode->rightChild == nullptr) {
                     decompressedData.push_back(static_cast<char>(currentNode->data));
                     currentNode = huffmanTree.getRoot();
                 }
             }
         }
-        //½«µ±Ç°¿éĞ´Èë
+        //å°†å½“å‰å—å†™å…¥
         outputFile.write(decompressedData.c_str(), decompressedData.size());
         decompressedData.clear();
         count++;
@@ -300,25 +301,25 @@ void HuffmanCode::decompress(const std::string& outputPath,QProgressBar* progres
 
 void HuffmanCode::parallelCharFrequency() {
 
-    //Èç¹ûÎÄ¼ş±È¿ÉÓÃÄÚ´æĞ¡¾ÍÒÔÎÄ¼ş´óĞ¡Îª×î´óÅäÖÃÄÚ´æ
+    //å¦‚æœæ–‡ä»¶æ¯”å¯ç”¨å†…å­˜å°å°±ä»¥æ–‡ä»¶å¤§å°ä¸ºæœ€å¤§é…ç½®å†…å­˜
     size_t length = _fileSize < _avaiableMermory ? _fileSize : _avaiableMermory;
-    int times = (_fileSize+length-1) / length;//Ñ­»·¶ÁÈ¡´ÎÊıµÈÓÚÎÄ¼ş´óĞ¡³ıÃ¿´Î¶ÁÈ¡ÏòÉÏÈ¡Õû¡¢
+    int times = (_fileSize+length-1) / length;//å¾ªç¯è¯»å–æ¬¡æ•°ç­‰äºæ–‡ä»¶å¤§å°é™¤æ¯æ¬¡è¯»å–å‘ä¸Šå–æ•´ã€
     for (int i = 1; i <= times; ++i) {
-        //×îºóÒ»´Îlength¿ÉÄÜĞ¡ÓÚÔ­À´length
+        //æœ€åä¸€æ¬¡lengthå¯èƒ½å°äºåŸæ¥length
         length = (i == times) ? (_fileSize - (times - 1) * length) : length;
-        //¼ÆËãÃ¿¸öÏß³ÌÓ¦¸Ã¶ÁÈ¡µÄ³¤¶È
+        //è®¡ç®—æ¯ä¸ªçº¿ç¨‹åº”è¯¥è¯»å–çš„é•¿åº¦
         unsigned int threadLength = length / _threadNum;
         std::vector<std::thread> threads;
-        unsigned int globalOffset = (i-1) * length;//µ±Ç°Åú´ÎµÄÆğÊ¼Î»ÖÃ¶ÔÓÚÕû¸öÎÄ¼şµÄÆ«ÒÆÁ¿
+        unsigned int globalOffset = (i-1) * length;//å½“å‰æ‰¹æ¬¡çš„èµ·å§‹ä½ç½®å¯¹äºæ•´ä¸ªæ–‡ä»¶çš„åç§»é‡
         for (int j = 0; j < _threadNum; ++j) {
             unsigned int start = globalOffset + j * threadLength;
             unsigned int end = (j == _threadNum - 1) ? (globalOffset + length) : (globalOffset + (j + 1) * threadLength);
-            //ÒòÎªÔÚÀàÄÚ£¬ËùÒÔÊ¹ÓÃÄäÃûº¯Êı¹¹½¨Ïß³Ì
+            //å› ä¸ºåœ¨ç±»å†…ï¼Œæ‰€ä»¥ä½¿ç”¨åŒ¿åå‡½æ•°æ„å»ºçº¿ç¨‹
             threads.emplace_back([this, start, end]() {
                 charFrequence(start, end, byteFrequence);
                 });
         }
-        //µÈ´ıËùÓĞÏß³ÌÍê³É
+        //ç­‰å¾…æ‰€æœ‰çº¿ç¨‹å®Œæˆ
         for (auto& thread : threads) {
             thread.join();
         }

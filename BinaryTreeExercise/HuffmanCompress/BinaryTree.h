@@ -7,56 +7,56 @@
 
 template<class T>
 struct TreeNode{
-	int priority = 0;//È¨Öµ
-	T data;//Êı¾İ
-	TreeNode* leftChild;//×óº¢×Ó
-	TreeNode* rightChild;//ÓÒº¢×Ó
+	int priority = 0;//æƒå€¼
+	T data;//æ•°æ®
+	TreeNode* leftChild;//å·¦å­©å­
+	TreeNode* rightChild;//å³å­©å­
 	TreeNode():leftChild(nullptr),rightChild(nullptr){}
 	TreeNode(T _data,int _priority=0,TreeNode* _leftChild=nullptr,TreeNode* _rightChild=nullptr)
 		:data(_data),priority(_priority),leftChild(_leftChild),rightChild(_rightChild){}
 
-	//±È½ÏÔËËã·ûÖØÔØ
+	//æ¯”è¾ƒè¿ç®—ç¬¦é‡è½½
 	bool operator ==(const TreeNode<T>& other)const { return this->data == other.data; }
 };
 template<class T>
 class BinaryTree {
 private:
-	TreeNode<T>* _root;//¶ş²æÊ÷¸ùÖ¸Õë
-	//´ÓÇ°ĞòĞòÁĞµİ¹é´´½¨½Úµã
-	TreeNode<char>* createFromPreorder(int& n, const std::string preorder);//n±íÊ¾µÚn¸ö×Ö·û
-	//¾²Ì¬¸¨Öú½»»»º¯Êı
+	TreeNode<T>* _root;//äºŒå‰æ ‘æ ¹æŒ‡é’ˆ
+	//ä»å‰åºåºåˆ—é€’å½’åˆ›å»ºèŠ‚ç‚¹
+	TreeNode<char>* createFromPreorder(int& n, const std::string preorder);//nè¡¨ç¤ºç¬¬nä¸ªå­—ç¬¦
+	//é™æ€è¾…åŠ©äº¤æ¢å‡½æ•°
 	static void swap(TreeNode<T>* node) {
 		TreeNode<T>* temp = node->leftChild;
 		node->leftChild = node->rightChild;
 		node->rightChild = temp;
 	}
-	//ÊµÏÖÇ°Ğò·ÃÎÊ,Ê¹ÓÃº¯ÊıÖ¸ÕëÍê³Évisit²Ù×÷
+	//å®ç°å‰åºè®¿é—®,ä½¿ç”¨å‡½æ•°æŒ‡é’ˆå®Œæˆvisitæ“ä½œ
 	void preVisit(TreeNode<T>* root, void(*visit)(TreeNode<T>* node));
-	//Ê¹ÓÃºóĞò±éÀúÉ¾³ıÕû¿ÃÊ÷
+	//ä½¿ç”¨ååºéå†åˆ é™¤æ•´æ£µæ ‘
     void destory(TreeNode<T>* root );
-	//´ÓÇ°ĞòºÍÖĞĞò´´½¨
+	//ä»å‰åºå’Œä¸­åºåˆ›å»º
 	TreeNode<char>* contructTree(const std::string& preorder, const std::string& inorder,
 		int preStart,int preEnd,int inStar,int inEnd);
-	//Êä³öÊ÷µÄÇ°Ğò±éÀú£¨Ö»Õë¶Ô½ÚµãÊÇchar»òunsigned charÊ±£©
+	//è¾“å‡ºæ ‘çš„å‰åºéå†ï¼ˆåªé’ˆå¯¹èŠ‚ç‚¹æ˜¯charæˆ–unsigned charæ—¶ï¼‰
 	std::string getPreorder(TreeNode<T>* root);
 public:
 	TreeNode<T>* getRoot() { return _root; }
-	//¸ø¶¨¸ù½ÚµãÖØĞÂ¹¹½¨Ê÷
+	//ç»™å®šæ ¹èŠ‚ç‚¹é‡æ–°æ„å»ºæ ‘
 	void rebuildTree(TreeNode<T>* root) { _root = root; }
 	BinaryTree(TreeNode<T>* root=nullptr):_root(root){}
-	//Êä³öÊ÷µÄÇ°Ğò±éÀú£¨Ö»Õë¶Ô½ÚµãÊÇchar»òunsigned charÊ±£©
+	//è¾“å‡ºæ ‘çš„å‰åºéå†ï¼ˆåªé’ˆå¯¹èŠ‚ç‚¹æ˜¯charæˆ–unsigned charæ—¶ï¼‰
 	std::string getPreorder();
 
-	//´ÓÇ°ĞòĞòÁĞ´´½¨Ê÷
+	//ä»å‰åºåºåˆ—åˆ›å»ºæ ‘
 	void createFromPreorder(const std::string preorder);
 
-	//´Ó²ãĞò±éÀú´´½¨
+	//ä»å±‚åºéå†åˆ›å»º
 	void createFromLevelorder(const std::string levelorder);
-	//´ÓÇ°ĞòºÍÖĞĞò´´½¨
+	//ä»å‰åºå’Œä¸­åºåˆ›å»º
 	void contructTree(const std::string &preorder, const std::string &inorder);
-	//ÊµÏÖÇ°Ğò·ÃÎÊ,Ê¹ÓÃº¯ÊıÖ¸ÕëÍê³Éswap²Ù×÷
+	//å®ç°å‰åºè®¿é—®,ä½¿ç”¨å‡½æ•°æŒ‡é’ˆå®Œæˆswapæ“ä½œ
 	void preVisit() { preVisit(_root, swap); }
-	//Ê¹ÓÃÕ»Ñ°ÕÒÌØ¶¨ÖµµÄ×æÏÈ
+	//ä½¿ç”¨æ ˆå¯»æ‰¾ç‰¹å®šå€¼çš„ç¥–å…ˆ
 	Stack<TreeNode<T>*> find(T key);
 	~BinaryTree() { destory(_root); }
 };
@@ -70,11 +70,11 @@ inline std::string BinaryTree<T>::getPreorder(){
 
 template<class T>
 void BinaryTree<T>::createFromPreorder(const std::string preorder){
-	//·ÀÖ¹ÄÚ´æĞ¹Â©
+	//é˜²æ­¢å†…å­˜æ³„æ¼
 	destory(_root);
-	//ÌØÊâÇé¿ö1£¬Óöµ½#±íÊ¾×ÓÊ÷Îª¿Õ£¬·µ»Ø
-	//ÌØÊâÇé¿ö2£¬Õû¸öĞòÁĞ½áÊø£¬·µ»Ø
-	//Ò»°ãÇé¿ö£ºĞÂ½¨½Úµã£¬È»ºóĞÂ½¨×ó×ÓÊ÷£¬È»ºóĞÂ½¨ÓÒ×ÓÊ÷
+	//ç‰¹æ®Šæƒ…å†µ1ï¼Œé‡åˆ°#è¡¨ç¤ºå­æ ‘ä¸ºç©ºï¼Œè¿”å›
+	//ç‰¹æ®Šæƒ…å†µ2ï¼Œæ•´ä¸ªåºåˆ—ç»“æŸï¼Œè¿”å›
+	//ä¸€èˆ¬æƒ…å†µï¼šæ–°å»ºèŠ‚ç‚¹ï¼Œç„¶åæ–°å»ºå·¦å­æ ‘ï¼Œç„¶åæ–°å»ºå³å­æ ‘
 	int n = 0;
 	_root = createFromPreorder(n, preorder);
 
@@ -82,11 +82,11 @@ void BinaryTree<T>::createFromPreorder(const std::string preorder){
 
 template<class T>
 inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
-	//·ÀÖ¹ÄÚ´æĞ¹Â©
+	//é˜²æ­¢å†…å­˜æ³„æ¼
 	destory(_root);
 	char nodeData;
-	LinkQueue<TreeNode<char>*> levleOrder;//´æ´¢Ê£Óà½ÚµãµÄÕ»
-	LinkQueue<TreeNode<char>*> currentNode;//´æ´¢´´½¨µ«ÊÇÎŞº¢×ÓµÄ½ÚµãÕ»
+	LinkQueue<TreeNode<char>*> levleOrder;//å­˜å‚¨å‰©ä½™èŠ‚ç‚¹çš„æ ˆ
+	LinkQueue<TreeNode<char>*> currentNode;//å­˜å‚¨åˆ›å»ºä½†æ˜¯æ— å­©å­çš„èŠ‚ç‚¹æ ˆ
 	for (char nodeData : levelorder) {
 		if (nodeData != '#')
 			levleOrder.enqueue(new TreeNode<char>(nodeData));
@@ -94,9 +94,9 @@ inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
 			levleOrder.enqueue(nullptr);
 	}
 	_root = levleOrder.dequeue();
-	currentNode.enqueue(_root);//ÏÈ½«¸ù½Úµã¼ÓÈë
+	currentNode.enqueue(_root);//å…ˆå°†æ ¹èŠ‚ç‚¹åŠ å…¥
 	while(currentNode.getSize()!=0){
-		TreeNode<char>* parentNode = currentNode.dequeue();//ĞèÒªÌí¼Óº¢×ÓµÄ¸¸½Úµã
+		TreeNode<char>* parentNode = currentNode.dequeue();//éœ€è¦æ·»åŠ å­©å­çš„çˆ¶èŠ‚ç‚¹
 		if (parentNode != nullptr) {
 			TreeNode<char>* leftChild = levleOrder.dequeue();
 			TreeNode<char>* rightChild = levleOrder.dequeue();
@@ -111,7 +111,7 @@ inline void BinaryTree<T>::createFromLevelorder(const std::string levelorder){
 
 template<class T>
 inline void BinaryTree<T>::contructTree(const std::string &preorder, const std::string &inorder){
-	//·ÀÖ¹ÄÚ´æĞ¹Â©
+	//é˜²æ­¢å†…å­˜æ³„æ¼
 	destory(_root);
 	//std::unordered_map<char, int> inorderMap;
 	if (preorder.size() == 0 || inorder.size() == 0) return;
@@ -120,30 +120,30 @@ inline void BinaryTree<T>::contructTree(const std::string &preorder, const std::
 
 template<class T>
 inline Stack<TreeNode<T>*> BinaryTree<T>::find(T key) {
-	Stack <TreeNode<T>*> ancestorStasck;//´æ´¢´Ó¸ù½Úµãµ½Ä¿±ê½Úµã¾­¹ıµÄ×æÏÈ½ÚµãµÄÕ»
-	Stack <TreeNode<T>*> rightChildStack;//Ç°Ğò±éÀúÏÈ·ÃÎÊ×óº¢×Ó¹Ê½«ÓÒº¢×Ó´æ´¢ÆğÀ´
+	Stack <TreeNode<T>*> ancestorStasck;//å­˜å‚¨ä»æ ¹èŠ‚ç‚¹åˆ°ç›®æ ‡èŠ‚ç‚¹ç»è¿‡çš„ç¥–å…ˆèŠ‚ç‚¹çš„æ ˆ
+	Stack <TreeNode<T>*> rightChildStack;//å‰åºéå†å…ˆè®¿é—®å·¦å­©å­æ•…å°†å³å­©å­å­˜å‚¨èµ·æ¥
 	if(_root==nullptr) return Stack <TreeNode<T>*>();
 	TreeNode<T>* current = _root;
-	bool isFinished = 0;//±ê¼ÇÕû¿ÃÊ÷ÊÇ·ñ±»·ÃÎÊÍê
+	bool isFinished = 0;//æ ‡è®°æ•´æ£µæ ‘æ˜¯å¦è¢«è®¿é—®å®Œ
 	do {
-		//½«¾­¹ıµÄ½ÚµãÊÓÎª×æÏÈ½Úµã
+		//å°†ç»è¿‡çš„èŠ‚ç‚¹è§†ä¸ºç¥–å…ˆèŠ‚ç‚¹
 		ancestorStasck.push(current);
-		//ÕÒµ½ÔªËØ·µ»Ø×æÏÈÕ»
+		//æ‰¾åˆ°å…ƒç´ è¿”å›ç¥–å…ˆæ ˆ
 		if ((current->leftChild!=nullptr&&current->leftChild->data== key) ||
 			(current->rightChild != nullptr && current->rightChild->data== key))
 			return ancestorStasck;
 		if (current->rightChild != nullptr)
-			//½«ÓÒº¢×ÓÑ¹ÈëÕ»
+			//å°†å³å­©å­å‹å…¥æ ˆ
 			rightChildStack.push(current->rightChild);
 		if (current->leftChild != nullptr) 
-			//¸üĞÂµ±Ç°½Úµã
+			//æ›´æ–°å½“å‰èŠ‚ç‚¹
 			current = current->leftChild;
-		else if(!rightChildStack.isEmpty()){//Èç¹û×óº¢×ÓÎª¿Õ
+		else if(!rightChildStack.isEmpty()){//å¦‚æœå·¦å­©å­ä¸ºç©º
 			ancestorStasck.pop();
 			current = rightChildStack.pop();
 		}
 		else { isFinished = 1; }
-	} while (!isFinished);//Ö±µ½ËùÓĞ½Úµã±»·ÃÎÊ
+	} while (!isFinished);//ç›´åˆ°æ‰€æœ‰èŠ‚ç‚¹è¢«è®¿é—®
 	return Stack <TreeNode<T>*>();
 }
 
@@ -170,16 +170,16 @@ template<class T>
 inline TreeNode<char>* BinaryTree<T>::contructTree(const std::string& preorder, const std::string& inorder,
 	int preStart, int preEnd, int inStart, int inEnd){
 	TreeNode<T>* root = new TreeNode<char>(preorder[preStart]);
-	//ÕÒµ½rootÔÚÖĞĞò±éÀúµÄÎ»ÖÃ
+	//æ‰¾åˆ°rootåœ¨ä¸­åºéå†çš„ä½ç½®
 	int position = inorder.find(preorder[preStart]);
-	int leftSize = position - inStart;//×ó×ÓÊ÷´óĞ¡
-	//Èç¹ûÓĞ×ó×ÓÊ÷
+	int leftSize = position - inStart;//å·¦å­æ ‘å¤§å°
+	//å¦‚æœæœ‰å·¦å­æ ‘
 	if (position != inStart) {
 		root->leftChild = contructTree(preorder, inorder, preStart + 1, preStart + leftSize, inStart, position - 1);
 	}
-	//Èç¹ûÓĞÓÒ×ÓÊ÷
+	//å¦‚æœæœ‰å³å­æ ‘
 	if (position != inEnd) {
-		//ÓÒ×ÓÊ÷µÄÇ°ĞòĞòÁĞ¿ªÍ·ÊÇ×ó×ÓÊ÷Ç°Ğò½áÎ²¼ÓÒ»
+		//å³å­æ ‘çš„å‰åºåºåˆ—å¼€å¤´æ˜¯å·¦å­æ ‘å‰åºç»“å°¾åŠ ä¸€
 		root->rightChild = contructTree(preorder, inorder, preStart+leftSize+1, preEnd, position + 1, inEnd);
 	}
 	return root;
@@ -189,15 +189,15 @@ template<class T>
 std::string BinaryTree<T>::getPreorder(TreeNode<T>* root){
 	if (root == nullptr) return "#";
 	std::string preorder;
-	preorder += static_cast<char>(root->data);//Ìí¼Ó¸ù½ÚµãÊı¾İ
-	preorder += getPreorder(root->leftChild);//×ó×ÓÊ÷µÄÏÈĞò±éÀú½á¹û
-	preorder += getPreorder(root->rightChild);//ÓÒ×ÓÊ÷µÄÏÈĞò±éÀú½á¹û
+	preorder += static_cast<char>(root->data);//æ·»åŠ æ ¹èŠ‚ç‚¹æ•°æ®
+	preorder += getPreorder(root->leftChild);//å·¦å­æ ‘çš„å…ˆåºéå†ç»“æœ
+	preorder += getPreorder(root->rightChild);//å³å­æ ‘çš„å…ˆåºéå†ç»“æœ
 	return preorder;
 }
 
 template<class T>
 TreeNode<char>* BinaryTree<T>::createFromPreorder( int& n, const std::string preorder){
-	//Ò»¶¨Òª´«ÈëÒıÓÃ£¬ÕâÑùn²Å»á±»ĞŞ¸Ä
+	//ä¸€å®šè¦ä¼ å…¥å¼•ç”¨ï¼Œè¿™æ ·næ‰ä¼šè¢«ä¿®æ”¹
 	if (preorder[n] != '#') {
 		TreeNode<char>* newNode = new TreeNode<T>(preorder[n]);
 		newNode->leftChild = createFromPreorder(++n, preorder);

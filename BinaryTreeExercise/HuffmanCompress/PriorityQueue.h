@@ -20,11 +20,11 @@ private:
     size_t _size;
 public:
     PriorityLinkQueue() : front(nullptr), rear(nullptr), _size(0) {}
-	//入队
+	//鍏ラ槦
     void enqueue(T _data, int priority);
-	//出队
+	//鍑洪槦
     T dequeue();
-	//获取队列长度
+	//鑾峰彇闃熷垪闀垮害
     size_t getSize() { return _size; }
 
     ~PriorityLinkQueue();
@@ -71,6 +71,6 @@ inline T PriorityLinkQueue<T>::dequeue() {
 template<class T>
 inline PriorityLinkQueue<T>::~PriorityLinkQueue() {
     while (_size != 0) {
-        dequeue();//使用dequeue析构
+        dequeue();//浣跨敤dequeue鏋愭瀯
     }
 }

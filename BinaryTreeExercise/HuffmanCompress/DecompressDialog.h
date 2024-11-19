@@ -89,6 +89,8 @@ private slots:
         int memoryValue = memorySlider->value();
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
         try {
+            qDebug() << outputEdit->text().toUtf8().constData();
+
             huff.decompress(outputEdit->text().toLocal8Bit().constData(),progressBar);
         }catch (const std::exception& e) {
         // 捕获异常并显示错误消息

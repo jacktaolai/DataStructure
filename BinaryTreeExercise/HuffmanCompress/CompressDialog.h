@@ -99,6 +99,7 @@ private slots:
         huff.setMemory(static_cast<int>(huff.getMemory() * (memoryValue / 100.0)));
         huff.setThreadNum(static_cast<int>(threadCount));
         try {
+            qDebug() << outputEdit->text().toLocal8Bit().constData();
             std::string filepath=outputEdit->text().toLocal8Bit().constData();
             huff.compress(filepath,progressBar);
         } catch (const std::exception& e) {

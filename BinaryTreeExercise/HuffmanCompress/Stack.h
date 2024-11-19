@@ -1,7 +1,7 @@
 #pragma once
 //Stack.h
 
-//Á´Ê½Õ»Àà½Úµã
+//é“¾å¼æ ˆç±»èŠ‚ç‚¹
 template <class T>
 struct StackNode {
 	T data;
@@ -9,7 +9,7 @@ struct StackNode {
 	StackNode(T d=0,StackNode<T>* ptr=nullptr):data(d),next(ptr){}
 };
 
-//Á´Ê½Õ»Àà
+//é“¾å¼æ ˆç±»
 template<class T>
 class Stack {
 private:
@@ -17,29 +17,29 @@ private:
 	int size;
 public:
 	Stack() { size = 0; top = nullptr; }
-	//¸´ÖÆ¹¹Ôìº¯Êı
+	//å¤åˆ¶æ„é€ å‡½æ•°
 	Stack(const Stack<T>& other) : top(nullptr), size(other.size) {
-		if (!other.top) return;//Èç¹ûÆäËûÕ»Îª¿Õ£¬²»ĞèÒª¸´ÖÆ
-		//¸´ÖÆÍ·½Úµã
+		if (!other.top) return;//å¦‚æœå…¶ä»–æ ˆä¸ºç©ºï¼Œä¸éœ€è¦å¤åˆ¶
+		//å¤åˆ¶å¤´èŠ‚ç‚¹
 		top = new StackNode<T>(other.top->data);
-		StackNode<T>* current = top;//µ±Ç°Õ»ÖĞµÄ½ÚµãÖ¸Õë
-		StackNode<T>* otherCurrent = other.top->next;//ÆäËûÕ»µÄ½ÚµãÖ¸Õë
+		StackNode<T>* current = top;//å½“å‰æ ˆä¸­çš„èŠ‚ç‚¹æŒ‡é’ˆ
+		StackNode<T>* otherCurrent = other.top->next;//å…¶ä»–æ ˆçš„èŠ‚ç‚¹æŒ‡é’ˆ
 
-		// ±éÀú other Õ»µÄ½Úµã£¬Öğ¸ö¸´ÖÆ
+		// éå† other æ ˆçš„èŠ‚ç‚¹ï¼Œé€ä¸ªå¤åˆ¶
 		while (otherCurrent) {
-			current->next = new StackNode<T>(otherCurrent->data);//¸´ÖÆµ±Ç°½Úµã
-			current = current->next;//Ç°½øµ½ÏÂÒ»¸ö½Úµã
-			otherCurrent = otherCurrent->next;//Ç°½øµ½ other µÄÏÂÒ»¸ö½Úµã
+			current->next = new StackNode<T>(otherCurrent->data);//å¤åˆ¶å½“å‰èŠ‚ç‚¹
+			current = current->next;//å‰è¿›åˆ°ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
+			otherCurrent = otherCurrent->next;//å‰è¿›åˆ° other çš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
 		}
 	}
-	//ÅĞ¶ÏÕ»¿Õ
+	//åˆ¤æ–­æ ˆç©º
 	bool isEmpty(){ return top == nullptr; }
 
-	//»ñÈ¡Õ»´óĞ¡
+	//è·å–æ ˆå¤§å°
 	int getSize() {
 		return size;
 	}
-	//½«ÔªËØÑ¹ÈëÕ»
+	//å°†å…ƒç´ å‹å…¥æ ˆ
 	void push(const T& value){
 		if (!isEmpty()) {
 			StackNode<T>* curr = top;
@@ -52,15 +52,15 @@ public:
 		size++;
 	}
 
-	//Êı×é×ªÕ»µÄ¹¹Ôìº¯Êı
+	//æ•°ç»„è½¬æ ˆçš„æ„é€ å‡½æ•°
 	Stack(const T* list, int size) {
 		top = nullptr;
-		for (int i = size - 1; i >= 0; --i) { //´ÓÊı×éÄ©Î²µ½¿ªÍ·ÒÀ´ÎÑ¹ÈëÕ»
+		for (int i = size - 1; i >= 0; --i) { //ä»æ•°ç»„æœ«å°¾åˆ°å¼€å¤´ä¾æ¬¡å‹å…¥æ ˆ
 			push(list[i]);
 		}
 	}
 
-	//½«ÔªËØµ¯³öÕ»
+	//å°†å…ƒç´ å¼¹å‡ºæ ˆ
 	T pop() {
 			StackNode<T>* curr = top;
 			top = top->next;
@@ -70,7 +70,7 @@ public:
 			return value;
 	}
 
-	//»ñÈ¡¶¥ÔªËØ
+	//è·å–é¡¶å…ƒç´ 
 	T getTop() { return top->data; }
 	
 	~Stack() {

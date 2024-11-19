@@ -2,7 +2,6 @@
 //LinkQueue.h
 
 #include <cstddef>
-#include <stdexcept>
 template<class T>
 struct QueueNode {
 	T data;
@@ -18,11 +17,11 @@ private:
 	size_t _size=0;
 public:
 	LinkQueue():front(nullptr),rear(nullptr),_size(0){}
-	//����
+	//入队
 	void enqueue(T _data);
-	//����
+	//出队
 	T dequeue();
-	//��ȡ���г���
+	//获取队列长度
 	size_t getSize() { return _size; }
 	~LinkQueue();
 };
@@ -43,7 +42,7 @@ inline void LinkQueue<T>::enqueue(T _data){
 
 template<class T>
 inline T LinkQueue<T>::dequeue(){
-	//warning:�������ܻ��пն��г��ӵĴ���
+	//warning:这里可能会有空队列出队的错误
 	if (_size == 0) { throw std::runtime_error("Queue is empty!"); }
 	QueueNode<T> temp = *front;
 	delete front;
