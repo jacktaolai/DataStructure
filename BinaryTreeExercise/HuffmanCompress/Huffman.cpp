@@ -114,7 +114,6 @@ void HuffmanCode::getHuffmanCode(TreeNode<unsigned char>* root,std::string* huff
 
 void HuffmanCode::compress(const std::string& outputFileName,QProgressBar* progress) {
 
-
     //╤ах║нд╪Ч
     std::ifstream inputFile(_fileName, std::ios::binary);
     if (!inputFile) {
